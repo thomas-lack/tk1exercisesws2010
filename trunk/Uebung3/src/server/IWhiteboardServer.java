@@ -3,16 +3,18 @@ package server;
 import java.awt.Color;
 import java.awt.Point;
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.util.List;
 
 import client.IWhiteboardClient;
 
-public interface IWhiteboardServer extends Remote {
-	public boolean register(String name, IWhiteboardClient client);
-	public boolean unregister(String name);
+public interface IWhiteboardServer extends Remote 
+{
+	public boolean login(String name, IWhiteboardClient client) throws RemoteException;
+	public boolean logout(String name) throws RemoteException;
 	
-	public List<Color> getAvailableColors();
-	public boolean bindColor(IWhiteboardClient client, Color color);
+	public List<Color> getAvailableColors() throws RemoteException;
+	public boolean bindColor(IWhiteboardClient client, Color color) throws RemoteException;
 	
-	public void sendLine(IWhiteboardClient client, Point start, Point end);
+	public void line(Point start, Point end, Color color) throws RemoteException;
 }
