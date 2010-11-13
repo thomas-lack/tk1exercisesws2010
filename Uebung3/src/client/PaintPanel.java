@@ -30,7 +30,7 @@ public class PaintPanel extends JPanel implements MouseListener, MouseMotionList
    @Override 
    public void paintComponent(Graphics g) 
    {
-      //super.paintComponent(g);
+      super.paintComponent(g);
       Graphics2D g2 = (Graphics2D)g;
       
       //... One time initialization of in-memory, saved image.
