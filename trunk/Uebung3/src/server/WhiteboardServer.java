@@ -2,22 +2,20 @@ package server;
 
 import java.awt.Color;
 import java.awt.Point;
-import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
-import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
-
 import client.IWhiteboardClient;
 
 public class WhiteboardServer extends UnicastRemoteObject implements IWhiteboardServer{
    private static final long serialVersionUID = 845348169309409680L;
-   Vector<IWhiteboardClient> registeredClients = new Vector<IWhiteboardClient>();
+   HashMap<String, IWhiteboardClient> registeredClients = new HashMap<String, IWhiteboardClient>();
    
    public WhiteboardServer() throws RemoteException
    {
@@ -41,41 +39,45 @@ public class WhiteboardServer extends UnicastRemoteObject implements IWhiteboard
    @Override
    public void line(Point start, Point end, Color color) throws RemoteException
    {
-      // TODO Auto-generated method stub
-      
+      for (Iterator<String> it = registeredClients.keySet().iterator();it.hasNext();)
+      {
+         IWhiteboardClient client = registeredClients.get(it.next());
+         client.receiveLine(start, end, color);
+      }
    }
 
    @Override
    public boolean login(String name, IWhiteboardClient client) throws RemoteException
    {
-      System.out.println("Server: Client " + client + " logging in.");
-      return false;
+      if (registeredClients.containsKey(name))
+      {
+         return false;
+      }
+            
+      System.out.println("Server: Client " + name + " logging in.");
+      registeredClients.put(name, client);
+      return true;
    }
 
    @Override
    public boolean logout(String name) throws RemoteException
    {
-      // TODO Auto-generated method stub
-      return false;
+      if (registeredClients.containsKey(name))
+      {
+         return false;
+      }
+      
+      System.out.println("Server: Client " + name + " logging out.");
+      registeredClients.remove(name);
+      return true;
    }
 
    public static void main(String[] args)
    {
-      /*
-      if (System.getSecurityManager() == null)
-      {
-         System.setSecurityManager(new RMISecurityManager());
-      }
-      */
-      
       try
       {
          String name = "Whiteboard";
          IWhiteboardServer server = new WhiteboardServer();
-         //IWhiteboardServer stub = (IWhiteboardServer) UnicastRemoteObject.exportObject(server, 0);
-         //Registry registry = LocateRegistry.getRegistry();
-         //Registry registry = LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
-         //registry.rebind(name, stub);
          LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
          Naming.rebind(name, server);
          System.out.println("WhiteboardServer bound");
