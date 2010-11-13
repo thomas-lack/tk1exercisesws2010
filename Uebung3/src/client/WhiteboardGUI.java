@@ -3,14 +3,13 @@ package client;
 import java.awt.Color;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.HashMap;
 
 import javax.swing.ButtonGroup;
+import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 
-public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, MouseListener
+public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener
 {
    private static final long serialVersionUID = 1L;
    private WhiteboardClient client;
@@ -26,7 +25,7 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, M
    private javax.swing.JRadioButtonMenuItem menuItemBlue;
    private javax.swing.JRadioButtonMenuItem menuItemRed;
    private javax.swing.JRadioButtonMenuItem menuItemGreen;
-   private javax.swing.JPanel paintPanel;
+   private PaintPanel paintPanel;
    
    
    /** Creates new form WhiteboardGUI */
@@ -46,7 +45,7 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, M
    }
    
    private void initComponents() {
-       paintPanel = new javax.swing.JPanel();
+       paintPanel = new PaintPanel(client); //new javax.swing.JPanel();
        menuBar = new javax.swing.JMenuBar();
        clientMenu = new javax.swing.JMenu();
        menuItemConnect = new javax.swing.JMenuItem();
@@ -59,10 +58,11 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, M
        menuItemRed = new javax.swing.JRadioButtonMenuItem();
        menuItemGreen = new javax.swing.JRadioButtonMenuItem();
    
+       this.setTitle("Client: " + client.getClientID());
        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
       
        paintPanel.setBackground(Color.WHITE);
-       paintPanel.addMouseListener(this);
+       //paintPanel.addMouseListener(this);
       
        javax.swing.GroupLayout paintPanelLayout = new javax.swing.GroupLayout(paintPanel);
        paintPanel.setLayout(paintPanelLayout);
@@ -138,7 +138,11 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, M
        pack();
    }
     
-
+   public JPanel getPaintPanel()
+   {
+      return paintPanel;
+   }
+   
    @Override
    public void itemStateChanged(ItemEvent e)
    {
@@ -147,43 +151,7 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, M
       if (comp instanceof JRadioButtonMenuItem)
       {
          String color = ((JRadioButtonMenuItem) comp).getText();
-         client.changeColor(colorMap.get(color));
+         client.setCurrentColor(colorMap.get(color));
       }
-   }
-
-   @Override
-   public void mouseClicked(MouseEvent ev)
-   {
-   }
-
-   @Override
-   public void mouseEntered(MouseEvent arg0)
-   {
-      // TODO Auto-generated method stub
-      
-   }
-
-   @Override
-   public void mouseExited(MouseEvent arg0)
-   {
-      // TODO Auto-generated method stub
-      
-   }
-
-   @Override
-   public void mousePressed(MouseEvent ev)
-   {
-      // TODO Auto-generated method stub
-      int x = ev.getX();
-      int y = ev.getY();
-      
-      System.out.println("x="+x+",y="+y);
-   }
-
-   @Override
-   public void mouseReleased(MouseEvent arg0)
-   {
-      // TODO Auto-generated method stub
-      
    }
 }
