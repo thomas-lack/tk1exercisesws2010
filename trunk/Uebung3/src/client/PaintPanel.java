@@ -35,9 +35,10 @@ public class PaintPanel extends JPanel implements MouseListener, MouseMotionList
       
       //... One time initialization of in-memory, saved image.
       if (_bufImage == null) {
-          //... This is the first time, initialize _bufImage
-          int w = this.getWidth();
-          int h = this.getHeight();
+          // initialize buffer image with greater dimensions than the 
+          // JFrame, so rescaling is not an issue anymore
+          int w = 2000; 
+          int h = 2000; 
           _bufImage = (BufferedImage)this.createImage(w, h);
           Graphics2D gc = _bufImage.createGraphics();
           gc.setColor(Color.WHITE);
