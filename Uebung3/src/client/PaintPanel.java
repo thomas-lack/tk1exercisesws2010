@@ -9,17 +9,27 @@ import java.rmi.RemoteException;
 
 import javax.swing.*;
 
+/**
+ * TK1 Exercise 3 - extended JPanel with mouse listening and drawing capabilities
+ * (part of the view in MVC concept)
+ * 
+ * @author Thomas Lack
+ */
 public class PaintPanel extends JPanel implements MouseListener, MouseMotionListener
 {
    private static final long serialVersionUID = 4217217917346748845L;
-   private BufferedImage _bufImage = null;
+   private BufferedImage buffer = null;
    private WhiteboardClient client = null;
-   private Point _start = null;
-   private Point _end = null;
+   private Point startPoint = null;
+   private Point endPoint = null;
    private enum State { IDLE, DRAGGING }
    private State _state = State.IDLE;
 
-   
+   /**
+    * constructor
+    * 
+    * @param client
+    */
    public PaintPanel(WhiteboardClient client)
    {
       this.client = client;
@@ -33,45 +43,41 @@ public class PaintPanel extends JPanel implements MouseListener, MouseMotionList
       super.paintComponent(g);
       Graphics2D g2 = (Graphics2D)g;
       
-      //... One time initialization of in-memory, saved image.
-      if (_bufImage == null) {
+      // create buffer image we are going to paint on later
+      if (buffer == null) {
           // initialize buffer image with greater dimensions than the 
           // JFrame, so rescaling is not an issue anymore
           int w = 2000; 
           int h = 2000; 
-          _bufImage = (BufferedImage)this.createImage(w, h);
-          Graphics2D gc = _bufImage.createGraphics();
+          buffer = (BufferedImage)this.createImage(w, h);
+          Graphics2D gc = buffer.createGraphics();
+          
+          // fill in background
           gc.setColor(Color.WHITE);
-          gc.fillRect(0, 0, w, h); // fill in background
+          gc.fillRect(0, 0, w, h); 
       }
       
-      //... Display the saved image.
-      g2.drawImage(_bufImage, null, 0, 0);
-      
-      //... Overwrite the screen display with currently dragged image.
-      if (_state == State.DRAGGING) {
-          //... Write shape that is being dragged over the screen image,
-          //    but not into the saved buffered image.  It will be written
-          //    on the saved image when the mouse is released.
-          drawNewLine(g2);
-      }
+      //display current buffered image
+      g2.drawImage(buffer, null, 0, 0);
    }
    
-   private void drawNewLine(Graphics2D g2) {
-      //... Draws current shape on a graphics context, either
-      //    on the context passed to paintComponent, or the
-      //    context for the BufferedImage.
-      
-      g2.setColor(client.getCurrentColor());    // Set the color.
-      g2.drawLine(_start.x, _start.y, _end.x  , _end.y);
-      //System.out.println("Drawing line (" + client.getCurrentColor() + ") from " + _start.x + "," + _start.y + " to " + _end.x + "," + _end.y);
-   }
-   
-   public void receiveLine(Point start, Point end, Color color)
+   /**
+    * draw a new line between given coordinates onto the buffer image
+    * 
+    * @param start
+    * @param end
+    * @param color
+    */
+   public void drawLine(Point start, Point end, Color color)
    {
-      Graphics2D g2 = _bufImage.createGraphics();
+      // get current buffer image as graphic object...
+      Graphics2D g2 = buffer.createGraphics();
+      
+      // ... so the new line can be added
       g2.setColor(color);
       g2.drawLine(start.x, start.y, end.x, end.y);
+      
+      // create visual feedback for the user
       this.repaint();
    }
    
@@ -79,45 +85,61 @@ public class PaintPanel extends JPanel implements MouseListener, MouseMotionList
    @Override
    public void mousePressed(MouseEvent e)
    {
-      _state = State.DRAGGING;   // Assume we're starting a drag.
+      // set the current state to mouse dragging / painting
+      _state = State.DRAGGING;
       
-      _start = e.getPoint();     // Save start point, and also initially
-      _end   = _start;           // as end point, which drag will change.
+      // since only one point is given, this will be the start and end point
+      // for the first line
+      startPoint = e.getPoint();
+      endPoint   = startPoint;
       
-      System.out.println("Mouse pressed: " + _state + "/" + _start);
-   }
-
-   @Override
-   public void mouseReleased(MouseEvent e) {
-      //... If released at end of drag, write shape into the BufferedImage,
-      //    which saves it in the drawing.
-      _end = e.getPoint();      // Set end point of drag.
-      if (_state == State.DRAGGING) 
+      // inform the server about the new line (dot in this case), 
+      // the user wants to draw
+      try
       {
-         _state = State.IDLE;
-          
-         //... Draw current shape in saved buffered image.
-         //drawNewLine(_bufImage.createGraphics());
-          
-         //this.repaint();
-         try
-         {
-            client.sendLine(_start, _end, client.getCurrentColor());
-         } catch (RemoteException e1)
-         {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-         }
+         client.sendLine(startPoint, endPoint);
+      } catch (RemoteException e1)
+      {
+         e1.printStackTrace();
       }
+            
+      //System.out.println("Mouse pressed: " + _state + "/" + startPoint);
    }
-
+   
    @Override
    public void mouseDragged(MouseEvent e)
    {
-      _state = State.DRAGGING;   // We're dragging to create a shape.
+      // just in case... set the current state to mouse dragging / painting
+      _state = State.DRAGGING;
       
-      _end = e.getPoint();       // Set end point of drag.  May change.
-      this.repaint();            // After change, show new shape
+      // since we are dragging the mouse, start point is already known
+      endPoint = e.getPoint();
+      
+      //System.out.println("Mouse dragged: " + _state + "/" + startPoint);
+      
+      // inform the server about the new line, the user wants to draw
+      try
+      {
+         client.sendLine(startPoint, endPoint);
+      } catch (RemoteException e1)
+      {
+         e1.printStackTrace();
+      }
+      
+      // after invoking the line drawing the current point the mouse points at
+      // is going to be the start point for the next line, as long as the user
+      // keeps on dragging
+      startPoint = endPoint;
+   }
+   
+   @Override
+   public void mouseReleased(MouseEvent e) {
+      // change the current state back to idle / not painting if the mouse button 
+      // is released
+      if (_state == State.DRAGGING) 
+      {
+         _state = State.IDLE;
+      }
    }
    
    // unused methods

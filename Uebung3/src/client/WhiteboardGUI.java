@@ -1,15 +1,25 @@
 package client;
 
 import java.awt.Color;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.rmi.RemoteException;
 import java.util.HashMap;
 
 import javax.swing.ButtonGroup;
-import javax.swing.JPanel;
+import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 
-public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener
+/**
+ * TK1 Exercise 3 - graphical user interface for the client
+ * (view in MVC concept)
+ * 
+ * @author Thomas Lack
+ */
+public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, ActionListener
 {
    private static final long serialVersionUID = 1L;
    private WhiteboardClient client;
@@ -35,6 +45,10 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener
       initComponents();
    }
 
+   /**
+    * sets up a mapping between colors the user can choose and 
+    * the internal representation of these colors
+    */
    private void initColorMap()
    {
       colorMap.put("Black", Color.BLACK);
@@ -44,6 +58,9 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener
       colorMap.put("Red", Color.RED);
    }
    
+   /**
+    * initialize all gui components
+    */
    private void initComponents() {
        paintPanel = new PaintPanel(client); //new javax.swing.JPanel();
        menuBar = new javax.swing.JMenuBar();
@@ -79,12 +96,15 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener
        clientMenu.setText("Client");
      
        menuItemConnect.setText("Connect");
+       menuItemConnect.addActionListener(this);
        clientMenu.add(menuItemConnect);
      
        menuItemDisconnect.setText("Disconnect");
+       menuItemDisconnect.addActionListener(this);
        clientMenu.add(menuItemDisconnect);
       
        menuItemExit.setText("Exit");
+       menuItemExit.addActionListener(this);
        clientMenu.add(menuItemExit);
       
        menuBar.add(clientMenu);
@@ -137,21 +157,48 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener
       
        pack();
    }
-    
-   public JPanel getPaintPanel()
+   
+   /**
+    * draws a new line on the painting panel. see also class PaintPanel. 
+    * 
+    * @param start
+    * @param end
+    * @param color
+    */
+   public void drawLine(Point start, Point end, Color color)
    {
-      return paintPanel;
+      paintPanel.drawLine(start, end, color);
    }
    
    @Override
    public void itemStateChanged(ItemEvent e)
    {
-      System.out.println(e.getSource());
+      // register new color if chosen
       Object comp = e.getSource();
-      if (comp instanceof JRadioButtonMenuItem)
+      String color = ((JRadioButtonMenuItem) comp).getText();
+      client.setCurrentColor(colorMap.get(color));
+   }
+
+   @Override
+   public void actionPerformed(ActionEvent e)
+   {
+      String menuItem = ((JMenuItem) e.getSource()).getText();
+      
+      if (menuItem.equals("Exit"))
       {
-         String color = ((JRadioButtonMenuItem) comp).getText();
-         client.setCurrentColor(colorMap.get(color));
+         client.disconnect();
+         System.exit(0);
+      }
+      else if (menuItem.equals("Connect"))
+      {
+         if(!client.connect())
+         {
+            System.err.println("Connect not possible. Maybe already connected?");
+         }
+      }
+      else if (menuItem.equals("Disconnect"))
+      {
+         client.disconnect();
       }
    }
 }
