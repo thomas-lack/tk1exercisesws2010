@@ -10,9 +10,14 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import client.IWhiteboardClient;
 
+/**
+ * TK1 Exercise 3 - implementation of RMI server
+ * (controller in MVC concept)
+ * 
+ * @author Thomas Lack
+ */
 public class WhiteboardServer extends UnicastRemoteObject implements IWhiteboardServer{
    private static final long serialVersionUID = 845348169309409680L;
    HashMap<String, IWhiteboardClient> registeredClients = new HashMap<String, IWhiteboardClient>();
@@ -22,20 +27,6 @@ public class WhiteboardServer extends UnicastRemoteObject implements IWhiteboard
       super();
    }
    
-   @Override
-   public boolean bindColor(IWhiteboardClient client, Color color) throws RemoteException
-   {
-      // TODO Auto-generated method stub
-      return false;
-   }
-
-   @Override
-   public List<Color> getAvailableColors() throws RemoteException
-   {
-      // TODO Auto-generated method stub
-      return null;
-   }
-
    @Override
    public void line(Point start, Point end, Color color) throws RemoteException
    {
@@ -62,7 +53,7 @@ public class WhiteboardServer extends UnicastRemoteObject implements IWhiteboard
    @Override
    public boolean logout(String name) throws RemoteException
    {
-      if (registeredClients.containsKey(name))
+      if (!registeredClients.containsKey(name))
       {
          return false;
       }
@@ -71,7 +62,10 @@ public class WhiteboardServer extends UnicastRemoteObject implements IWhiteboard
       registeredClients.remove(name);
       return true;
    }
-
+   
+   /**
+    * @param args
+    */
    public static void main(String[] args)
    {
       try
