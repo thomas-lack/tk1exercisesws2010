@@ -15,28 +15,25 @@ import server.IWhiteboardServer;
  * TK1 Exercise 3 - Implementation of whiteboard client
  * somewhat the model in the MVC pattern and a communication layer to the controller (server)
  * 
- * @author Thomas Lack
+ * @author Thomas Lack, Florian Mueller
  */
 public class WhiteboardClient extends UnicastRemoteObject implements IWhiteboardClient
 {
-   private static final long serialVersionUID = -227030971339158140L;
-   private Color currentColor = Color.BLACK; // standard color
-   private IWhiteboardServer server;
-   private String clientID = UUID.randomUUID().toString();
-   private WhiteboardGUI gui = null;
-   private enum State { CONNECTED, DISCONNECTED }
-   private State state = State.DISCONNECTED;
+	private static final long serialVersionUID = -227030971339158140L;
+	private Color currentColor = Color.BLACK; // standard color
+	private IWhiteboardServer server;
+	private String clientID = UUID.randomUUID().toString();
+	private WhiteboardGUI gui = null;
+	private enum State { CONNECTED, DISCONNECTED }
+	private State state = State.DISCONNECTED;
    
-   protected WhiteboardClient(IWhiteboardServer server) throws RemoteException
-   {
-      super();
-      
-      // save server object
-      this.setServer(server);
-   }
+   	public WhiteboardClient() throws RemoteException {
+		super();
+		gui = new WhiteboardGUI(this);
+	}
    
-   @Override 	
-   public void receiveLine(Point start, Point end, Color color) throws RemoteException
+   	@Override 	
+   	public void receiveLine(Point start, Point end, Color color) throws RemoteException
 	{
 		gui.drawLine(start,end,color);
 	}
@@ -48,12 +45,10 @@ public class WhiteboardClient extends UnicastRemoteObject implements IWhiteboard
 	 * @param end
 	 * @throws RemoteException
 	 */
-	public void sendLine(Point start, Point end) throws RemoteException
+   	public void sendLine(Point start, Point end) throws RemoteException
 	{
-	   if (state == State.CONNECTED)
-	   {
+	   if (isConnected())
 	      server.line(start, end, this.getCurrentColor());
-	   }
 	}
 	
 	/**
@@ -61,10 +56,6 @@ public class WhiteboardClient extends UnicastRemoteObject implements IWhiteboard
 	 */
 	public void renderGUI()
 	{
-      if (gui == null)
-      {
-         gui = new WhiteboardGUI(this);
-      }
       gui.setVisible(true);
 	}
 	
@@ -97,85 +88,49 @@ public class WhiteboardClient extends UnicastRemoteObject implements IWhiteboard
       return clientID;
    }
    
-   /**
-    * setter for the RMI server
-    * 
-    * @param server
-    */
-   public void setServer(IWhiteboardServer server)
-   {
-      this.server = server;
+   public boolean connect(String addresss){
+	   return connect(addresss, Registry.REGISTRY_PORT);
    }
    
-   /**
-    * getter for the server object
-    * 
-    * @return RMI server
-    */
-   public IWhiteboardServer getServer()
-   {
-      return server;
+   public boolean connect(String addresss, int port){
+	   try {
+		   LocateRegistry.getRegistry(port);
+		   server = (IWhiteboardServer) Naming.lookup(
+				   "rmi://" + addresss + "/" + IWhiteboardServer.SERVICE_NAME);
+		   server.login(getClientID(), this);
+		   state = State.CONNECTED;
+		   return true;
+	   } catch (Exception e) {
+		   e.printStackTrace();
+	   } 
+	   
+	   return false;
    }
    
-   /**
-    * log client into server
-    * 
-    * @return boolean
-    */
-   public boolean connect()
-   {
-      try
-      {
-         if (server.login(getClientID(), this))
-         {
-            state = State.CONNECTED;
-            return true;
-         }
-      } catch (RemoteException e)
-      {
-         e.printStackTrace();
-      }
-      return false;
+   public boolean isConnected(){
+	   return null != server && State.CONNECTED == state;
    }
    
-   /**
-    * logout client from server
-    */
-   public boolean disconnect()
-   {
-      try
-      {
-         if (server.logout(getClientID()))
-         {
-            state = State.DISCONNECTED;
-            return true;
-         }
-      } catch (RemoteException e)
-      {
-         e.printStackTrace();
-      }
-      return false;
+   public void disconnect(){
+	   try {
+		   server.logout(getClientID());
+		   server = null;
+		   state = State.DISCONNECTED;
+	   } catch (RemoteException e) {
+		   e.printStackTrace();
+	   }
    }
    
 	/**
     * @param args the command line arguments
     */
    public static void main(String args[]) 
-   {
-      try
-      {
-         String name = "Whiteboard";
-         LocateRegistry.getRegistry(Registry.REGISTRY_PORT);
-         IWhiteboardServer server = (IWhiteboardServer) Naming.lookup("rmi://127.0.0.1/" + name);
-         WhiteboardClient client = new WhiteboardClient(server);
-         if (client.connect())
-         {
-            client.renderGUI();
-         }
-      } catch (Exception e)
-      {
-         System.err.println("WhiteboardClient Exception:");
-         e.printStackTrace();
-      }
+   {	  
+		try {
+			WhiteboardClient client = new WhiteboardClient();
+			client.renderGUI();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
    }
 }
