@@ -13,6 +13,8 @@ import client.IWhiteboardClient;
  */
 public interface IWhiteboardServer extends Remote 
 {
+	public final static String SERVICE_NAME = "Whiteboard"; 
+	
 	public boolean login(String name, IWhiteboardClient client) throws RemoteException;
 	public boolean logout(String name) throws RemoteException;
 	public void line(Point start, Point end, Color color) throws RemoteException;

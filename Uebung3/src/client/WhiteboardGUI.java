@@ -6,18 +6,21 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 
 /**
  * TK1 Exercise 3 - graphical user interface for the client
  * (view in MVC concept)
  * 
- * @author Thomas Lack
+ * @author Thomas Lack, Florian Mueller
  */
 public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, ActionListener
 {
@@ -30,11 +33,7 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, A
    private javax.swing.JMenuItem menuItemConnect;
    private javax.swing.JMenuItem menuItemDisconnect;
    private javax.swing.JMenuItem menuItemExit;
-   private javax.swing.JRadioButtonMenuItem menuItemBlack;
-   private javax.swing.JRadioButtonMenuItem menuItemYellow;
-   private javax.swing.JRadioButtonMenuItem menuItemBlue;
-   private javax.swing.JRadioButtonMenuItem menuItemRed;
-   private javax.swing.JRadioButtonMenuItem menuItemGreen;
+   private javax.swing.JRadioButtonMenuItem currentColorMenuItem;
    private PaintPanel paintPanel;
    
    
@@ -56,6 +55,8 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, A
       colorMap.put("Blue", Color.BLUE);
       colorMap.put("Green", Color.GREEN);
       colorMap.put("Red", Color.RED);
+      colorMap.put("Orange", Color.ORANGE);
+      colorMap.put("Magenta", Color.MAGENTA);
    }
    
    /**
@@ -69,11 +70,6 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, A
        menuItemDisconnect = new javax.swing.JMenuItem();
        menuItemExit = new javax.swing.JMenuItem();
        colorMenu = new javax.swing.JMenu();
-       menuItemBlack = new javax.swing.JRadioButtonMenuItem();
-       menuItemYellow = new javax.swing.JRadioButtonMenuItem();
-       menuItemBlue = new javax.swing.JRadioButtonMenuItem();
-       menuItemRed = new javax.swing.JRadioButtonMenuItem();
-       menuItemGreen = new javax.swing.JRadioButtonMenuItem();
    
        this.setTitle("Client: " + client.getClientID());
        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -100,6 +96,7 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, A
        clientMenu.add(menuItemConnect);
      
        menuItemDisconnect.setText("Disconnect");
+       menuItemDisconnect.setEnabled(false);
        menuItemDisconnect.addActionListener(this);
        clientMenu.add(menuItemDisconnect);
       
@@ -111,34 +108,15 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, A
         
        // color menu
        colorMenu.setText("Color");
-      
-       menuItemBlack.setText("Black");
-       menuItemBlack.setSelected(true);
-       menuItemBlack.addItemListener(this);
-       colorMenu.add(menuItemBlack);
-      
-       menuItemYellow.setText("Yellow");
-       menuItemYellow.addItemListener(this);
-       colorMenu.add(menuItemYellow);
-      
-       menuItemBlue.setText("Blue");
-       menuItemBlue.addItemListener(this);
-       colorMenu.add(menuItemBlue);
-     
-       menuItemRed.setText("Red");
-       menuItemRed.addItemListener(this);
-       colorMenu.add(menuItemRed);
-      
-       menuItemGreen.setText("Green");
-       menuItemGreen.addItemListener(this);
-       colorMenu.add(menuItemGreen);
-           
        ButtonGroup g = new ButtonGroup();
-       g.add(menuItemBlack);
-       g.add(menuItemYellow);
-       g.add(menuItemBlue);
-       g.add(menuItemRed);
-       g.add(menuItemGreen);
+       
+       for (String color : colorMap.keySet()) {
+    	   JRadioButtonMenuItem colorMenuItem = new JRadioButtonMenuItem();
+    	   colorMenuItem.setText(color);
+    	   colorMenuItem.addItemListener(this);
+    	   colorMenu.add(colorMenuItem);
+    	   g.add(colorMenuItem);
+       }
         
        menuBar.add(colorMenu);
    
@@ -156,6 +134,16 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, A
        );
       
        pack();
+       
+       addWindowListener(new WindowAdapter() {
+    	   @Override
+    	public void windowClosing(WindowEvent e) {   
+    		if(client.isConnected())
+    			client.disconnect();
+    		
+    		super.windowClosing(e);
+    	}
+       });
    }
    
    /**
@@ -184,21 +172,47 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, A
    {
       String menuItem = ((JMenuItem) e.getSource()).getText();
       
-      if (menuItem.equals("Exit"))
-      {
-         client.disconnect();
+      if (menuItem.equals("Exit")){
+    	 if(client.isConnected())
+    		 client.disconnect();
+    	 
          System.exit(0);
       }
-      else if (menuItem.equals("Connect"))
-      {
-         if(!client.connect())
-         {
-            System.err.println("Connect not possible. Maybe already connected?");
-         }
+      else if (menuItem.equals("Connect")){
+    	  String address = JOptionPane.showInputDialog("Enter server address");
+    	  String[] addressSegments = address.split(":");
+    	  
+    	  if(2 == addressSegments.length){
+    		  if(client.connect(
+    				  addressSegments[0], 
+    				  Integer.parseInt(addressSegments[1]))){
+        		  menuItemConnect.setEnabled(false);
+        		  menuItemDisconnect.setEnabled(true);
+        	  } else{
+        		  JOptionPane.showMessageDialog(
+        				  null, 
+        				  "Invalid address!",
+        				  "Error",
+        				  JOptionPane.ERROR_MESSAGE);
+        	  }
+    	  }
+    	  else{
+    		  if(client.connect(address)){
+        		  menuItemConnect.setEnabled(false);
+        		  menuItemDisconnect.setEnabled(true);
+        	  } else{
+        		  JOptionPane.showMessageDialog(
+        				  null, 
+        				  "Invalid address!",
+        				  "Error",
+        				  JOptionPane.ERROR_MESSAGE);
+        	  }
+    	  }
       }
-      else if (menuItem.equals("Disconnect"))
-      {
+      else if (menuItem.equals("Disconnect")){
          client.disconnect();
+         menuItemConnect.setEnabled(true);
+		 menuItemDisconnect.setEnabled(false);
       }
    }
 }
