@@ -8,7 +8,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -77,14 +76,16 @@ public class WhiteboardServer extends UnicastRemoteObject implements IWhiteboard
    @Override
    public boolean logout(String name) throws RemoteException
    {
-      if (!registeredClients.containsKey(name))
-      {
+      if (!registeredClients.containsKey(name)){
          return false;
       }
       
       System.out.println("Server: Client " + name + " logging out.");
-      availaleColorsList.add(clientColorBindMap.get(name));
-      clientColorBindMap.remove(name);
+      if(clientColorBindMap.containsKey(name)){
+	      availaleColorsList.add(clientColorBindMap.get(name));
+	      clientColorBindMap.remove(name);
+      }
+      
       registeredClients.remove(name);
       return true;
    }
@@ -107,15 +108,14 @@ public class WhiteboardServer extends UnicastRemoteObject implements IWhiteboard
          e.printStackTrace();
       } catch (MalformedURLException e)
       {
-         // TODO Auto-generated catch block
          e.printStackTrace();
       }
    }
 
 	@Override
 	public boolean bindColorToClient(String id, String color) {
-		System.out.println("Bind " + color + " to " + id);
 		if(availaleColorsList.contains(color)){
+			System.out.println("Bind " + color + " to " + id);
 			availaleColorsList.remove(color);
 			clientColorBindMap.put(id, color);
 			return true;

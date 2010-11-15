@@ -5,7 +5,6 @@ import java.awt.Point;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.UUID;
 
@@ -86,10 +85,6 @@ public class WhiteboardClient extends UnicastRemoteObject implements IWhiteboard
    public String getClientID()
    {
       return clientID;
-   }
-   
-   public boolean connect(String addresss){
-	   return connect(addresss, Registry.REGISTRY_PORT);
    }
    
    public IWhiteboardServer getServer(){
