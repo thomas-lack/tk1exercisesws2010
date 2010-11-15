@@ -10,6 +10,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.rmi.RemoteException;
 import java.util.HashMap;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JMenuItem;
@@ -57,6 +60,7 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, A
       colorMap.put("Red", Color.RED);
       colorMap.put("Orange", Color.ORANGE);
       colorMap.put("Magenta", Color.MAGENTA);
+      colorMap.put("White", Color.WHITE);
    }
    
    /**
@@ -118,7 +122,7 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, A
     	   g.add(colorMenuItem);
        }
         
-       menuBar.add(colorMenu);
+       // menuBar.add(colorMenu);
    
        setJMenuBar(menuBar);
       
@@ -182,6 +186,18 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, A
     	  String address = JOptionPane.showInputDialog("Enter server address");
     	  String[] addressSegments = address.split(":");
     	  
+    	  Pattern pattern = Pattern.compile("[a-z0-9.]+(:[1-9][0-9]{0,4})?");
+    	  Matcher matcher = pattern.matcher(address);
+    	  
+    	  if(!matcher.matches()){
+    		  JOptionPane.showMessageDialog(
+    				  null, 
+    				  "Invalid address",
+    				  "Error",
+    				  JOptionPane.ERROR_MESSAGE);
+    		  return;
+    	  }
+    	  
     	  if(2 == addressSegments.length){
     		  if(client.connect(
     				  addressSegments[0], 
@@ -191,9 +207,10 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, A
         	  } else{
         		  JOptionPane.showMessageDialog(
         				  null, 
-        				  "Invalid address!",
+        				  "Failed to connect to " + address, 
         				  "Error",
         				  JOptionPane.ERROR_MESSAGE);
+        		  return;
         	  }
     	  }
     	  else{
@@ -203,16 +220,40 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, A
         	  } else{
         		  JOptionPane.showMessageDialog(
         				  null, 
-        				  "Invalid address!",
+        				  "Failed to connect to " + address, 
         				  "Error",
         				  JOptionPane.ERROR_MESSAGE);
+        		  return;
         	  }
     	  }
+    	  
+    	 showColorDialog();
       }
+      
       else if (menuItem.equals("Disconnect")){
          client.disconnect();
          menuItemConnect.setEnabled(true);
 		 menuItemDisconnect.setEnabled(false);
       }
+   }
+   
+   public void showColorDialog(){
+	   String color = "";
+	   String message = "Color unavailable, choose another";
+	   boolean unavailable = false;
+	   try {
+		do {
+			List<String> availableColors = client.getServer()
+					.getAvailableColor();
+			color = (String) JOptionPane.showInputDialog(null,
+					(unavailable) ? (message) : (""), "Choose a Color",
+					JOptionPane.QUESTION_MESSAGE, null, availableColors
+							.toArray(), availableColors.get(0));
+			unavailable = true;
+		} while (!client.getServer().bindColorToClient(client.getClientID(),
+				color));
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
    }
 }
