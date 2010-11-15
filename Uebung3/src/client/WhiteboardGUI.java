@@ -8,13 +8,12 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.rmi.RemoteException;
+import java.rmi.registry.Registry;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.ButtonGroup;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
@@ -31,36 +30,17 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, A
    private WhiteboardClient client;
    private HashMap<String, Color> colorMap = new HashMap<String, Color>();
    private javax.swing.JMenu clientMenu;
-   private javax.swing.JMenu colorMenu;
    private javax.swing.JMenuBar menuBar;
    private javax.swing.JMenuItem menuItemConnect;
    private javax.swing.JMenuItem menuItemDisconnect;
    private javax.swing.JMenuItem menuItemExit;
-   private javax.swing.JRadioButtonMenuItem currentColorMenuItem;
    private PaintPanel paintPanel;
    
    
    /** Creates new form WhiteboardGUI */
    public WhiteboardGUI(WhiteboardClient client) {
       this.client = client;  
-      initColorMap();
       initComponents();
-   }
-
-   /**
-    * sets up a mapping between colors the user can choose and 
-    * the internal representation of these colors
-    */
-   private void initColorMap()
-   {
-      colorMap.put("Black", Color.BLACK);
-      colorMap.put("Yellow", Color.YELLOW);
-      colorMap.put("Blue", Color.BLUE);
-      colorMap.put("Green", Color.GREEN);
-      colorMap.put("Red", Color.RED);
-      colorMap.put("Orange", Color.ORANGE);
-      colorMap.put("Magenta", Color.MAGENTA);
-      colorMap.put("White", Color.WHITE);
    }
    
    /**
@@ -73,7 +53,6 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, A
        menuItemConnect = new javax.swing.JMenuItem();
        menuItemDisconnect = new javax.swing.JMenuItem();
        menuItemExit = new javax.swing.JMenuItem();
-       colorMenu = new javax.swing.JMenu();
    
        this.setTitle("Client: " + client.getClientID());
        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -109,32 +88,29 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, A
        clientMenu.add(menuItemExit);
       
        menuBar.add(clientMenu);
-        
-       // color menu
-       colorMenu.setText("Color");
-       ButtonGroup g = new ButtonGroup();
-       
-       for (String color : colorMap.keySet()) {
-    	   JRadioButtonMenuItem colorMenuItem = new JRadioButtonMenuItem();
-    	   colorMenuItem.setText(color);
-    	   colorMenuItem.addItemListener(this);
-    	   colorMenu.add(colorMenuItem);
-    	   g.add(colorMenuItem);
-       }
-        
-       // menuBar.add(colorMenu);
-   
        setJMenuBar(menuBar);
       
-       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(
+    		   getContentPane());
+       
        getContentPane().setLayout(layout);
        layout.setHorizontalGroup(
-             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-             .addComponent(paintPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+             layout.createParallelGroup(
+            		 javax.swing.GroupLayout.Alignment.LEADING)
+             .addComponent(
+            		 paintPanel, 
+            		 javax.swing.GroupLayout.DEFAULT_SIZE, 
+            		 javax.swing.GroupLayout.DEFAULT_SIZE, 
+            		 Short.MAX_VALUE)
        );
        layout.setVerticalGroup(
-             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-             .addComponent(paintPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+             layout.createParallelGroup(
+            		 javax.swing.GroupLayout.Alignment.LEADING)
+             .addComponent(
+            		 paintPanel, 
+            		 javax.swing.GroupLayout.DEFAULT_SIZE, 
+            		 javax.swing.GroupLayout.DEFAULT_SIZE, 
+            		 Short.MAX_VALUE)
        );
       
        pack();
@@ -183,11 +159,9 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, A
          System.exit(0);
       }
       else if (menuItem.equals("Connect")){
-    	  String address = JOptionPane.showInputDialog("Enter server address");
-    	  String[] addressSegments = address.split(":");
-    	  
-    	  Pattern pattern = Pattern.compile("[a-z0-9.]+(:[1-9][0-9]{0,4})?");
-    	  Matcher matcher = pattern.matcher(address);
+    	  String input = JOptionPane.showInputDialog("Enter server address");
+    	  Pattern pattern = Pattern.compile("([a-z0-9.]+)(:[1-9][0-9]{0,4})?");
+    	  Matcher matcher = pattern.matcher(input);
     	  
     	  if(!matcher.matches()){
     		  JOptionPane.showMessageDialog(
@@ -198,36 +172,26 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, A
     		  return;
     	  }
     	  
-    	  if(2 == addressSegments.length){
-    		  if(client.connect(
-    				  addressSegments[0], 
-    				  Integer.parseInt(addressSegments[1]))){
-        		  menuItemConnect.setEnabled(false);
-        		  menuItemDisconnect.setEnabled(true);
-        	  } else{
-        		  JOptionPane.showMessageDialog(
-        				  null, 
-        				  "Failed to connect to " + address, 
-        				  "Error",
-        				  JOptionPane.ERROR_MESSAGE);
-        		  return;
-        	  }
+    	  int port = Registry.REGISTRY_PORT;
+    	  String address = matcher.group(1);
+    	  
+    	  if(null != matcher.group(2))
+    		  port = Integer.parseInt(matcher.group(2).substring(1));
+    	  
+    	  if(client.connect(address, port)) {
+    		  menuItemConnect.setEnabled(false);
+    		  menuItemDisconnect.setEnabled(true);
+    		  paintPanel.clearCanvas();
     	  }
-    	  else{
-    		  if(client.connect(address)){
-        		  menuItemConnect.setEnabled(false);
-        		  menuItemDisconnect.setEnabled(true);
-        	  } else{
-        		  JOptionPane.showMessageDialog(
-        				  null, 
-        				  "Failed to connect to " + address, 
-        				  "Error",
-        				  JOptionPane.ERROR_MESSAGE);
-        		  return;
-        	  }
+    	  else {
+    		  JOptionPane.showMessageDialog(
+    				  null, 
+    				  "Failed to connect to " + address + ":" + port, 
+    				  "Connectionerror", 
+    				  JOptionPane.ERROR_MESSAGE);
     	  }
     	  
-    	 showColorDialog();
+    	  showColorDialog();
       }
       
       else if (menuItem.equals("Disconnect")){
@@ -237,23 +201,53 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, A
       }
    }
    
+   /**
+    * Shows a dialog where the user can choose a color 
+    */
    public void showColorDialog(){
 	   String color = "";
-	   String message = "Color unavailable, choose another";
-	   boolean unavailable = false;
+	   boolean colorAvailable = false;
+	   
 	   try {
-		do {
-			List<String> availableColors = client.getServer()
-					.getAvailableColor();
-			color = (String) JOptionPane.showInputDialog(null,
-					(unavailable) ? (message) : (""), "Choose a Color",
-					JOptionPane.QUESTION_MESSAGE, null, availableColors
-							.toArray(), availableColors.get(0));
-			unavailable = true;
-		} while (!client.getServer().bindColorToClient(client.getClientID(),
-				color));
-	} catch (Exception e) {
-		e.printStackTrace();
-	}
+		   while (!colorAvailable) {
+			   List<String> availableColors = client.getServer()
+			   	.getAvailableColor();
+			   
+			   color = (String) JOptionPane.showInputDialog(
+					   	null,
+					   	"",
+						"Choose a Color",
+						JOptionPane.QUESTION_MESSAGE, 
+						null, 
+						availableColors.toArray(), 
+						availableColors.get(0));
+			   
+			   if(null == color)
+				   throw new Exception("Colordialog canceled");
+			   
+			   colorAvailable = client.getServer().bindColorToClient(
+					   client.getClientID(), 
+					   color);
+			   
+			   if(!colorAvailable)
+				   JOptionPane.showMessageDialog(
+			 				  null, 
+			 				  "Your choosen color is currently in use." + 
+			 				  "\nPlease choose another.", 
+			 				  "Error", 
+			 				  JOptionPane.ERROR_MESSAGE);
+		   }
+	   } catch (Exception e) {
+		   JOptionPane.showMessageDialog(
+ 				  null, 
+ 				  "Connection failed, please try again " + 
+ 				  "\n\n Cause: " + e.getMessage(), 
+ 				  "Error", 
+ 				  JOptionPane.ERROR_MESSAGE);
+		   
+		   client.disconnect();
+		   menuItemConnect.setEnabled(true);
+		   menuItemDisconnect.setEnabled(false);
+	   }
    }
 }

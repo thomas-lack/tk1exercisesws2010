@@ -55,6 +55,7 @@ public class PaintPanel extends JPanel implements MouseListener, MouseMotionList
       super.paintComponent(g);
       Graphics2D g2 = (Graphics2D)g;
       
+      
       // create buffer image we are going to paint on later
       if (buffer == null) {
           // initialize buffer image with greater dimensions than the 
@@ -62,11 +63,7 @@ public class PaintPanel extends JPanel implements MouseListener, MouseMotionList
           int w = 2000; 
           int h = 2000; 
           buffer = (BufferedImage)this.createImage(w, h);
-          Graphics2D gc = buffer.createGraphics();
-          
-          // fill in background
-          gc.setColor(Color.WHITE);
-          gc.fillRect(0, 0, w, h); 
+          clearCanvas();
       }
       
       //display current buffered image
@@ -96,6 +93,13 @@ public class PaintPanel extends JPanel implements MouseListener, MouseMotionList
       
       // create visual feedback for the user
       this.repaint();
+   }
+   
+   public void clearCanvas(){
+	   Graphics2D g2 = buffer.createGraphics();
+	   g2.setColor(Color.WHITE);
+	   g2.fillRect(0, 0, buffer.getWidth(), buffer.getHeight());
+	   invalidate();
    }
    
    
