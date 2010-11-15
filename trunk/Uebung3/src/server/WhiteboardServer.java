@@ -8,8 +8,12 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
 import client.IWhiteboardClient;
 
 /**
@@ -22,18 +26,38 @@ public class WhiteboardServer extends UnicastRemoteObject implements IWhiteboard
    private static final long serialVersionUID = 845348169309409680L;
    HashMap<String, IWhiteboardClient> registeredClients = new HashMap<String, IWhiteboardClient>();
    
+   LinkedList<String> availaleColorsList = null;
+   HashMap<String, Color> colorMap = null;
+   HashMap<String, String> clientColorBindMap = null;
+   
    public WhiteboardServer() throws RemoteException
    {
       super();
+      
+      colorMap = new HashMap<String, Color>();
+      colorMap.put("Black", Color.BLACK);
+      colorMap.put("Red", Color.RED);
+      colorMap.put("Blue", Color.BLUE);
+      colorMap.put("Green", Color.GREEN);
+      colorMap.put("Orange", Color.ORANGE);
+      colorMap.put("Magenta", Color.MAGENTA);
+      colorMap.put("Gray", Color.GRAY);
+      colorMap.put("Yellow", Color.YELLOW);
+      
+      availaleColorsList = new LinkedList<String>(colorMap.keySet());
+      clientColorBindMap = new HashMap<String, String>();
    }
    
    @Override
-   public void line(Point start, Point end, Color color) throws RemoteException
+   public void line(Point start, Point end, String id) throws RemoteException
    {
       for (Iterator<String> it = registeredClients.keySet().iterator();it.hasNext();)
       {
          IWhiteboardClient client = registeredClients.get(it.next());
-         client.receiveLine(start, end, color);
+         client.receiveLine(
+        		 start, 
+        		 end,
+        		 colorMap.get(clientColorBindMap.get(id)));
       }
    }
 
@@ -59,6 +83,8 @@ public class WhiteboardServer extends UnicastRemoteObject implements IWhiteboard
       }
       
       System.out.println("Server: Client " + name + " logging out.");
+      availaleColorsList.add(clientColorBindMap.get(name));
+      clientColorBindMap.remove(name);
       registeredClients.remove(name);
       return true;
    }
@@ -85,4 +111,21 @@ public class WhiteboardServer extends UnicastRemoteObject implements IWhiteboard
          e.printStackTrace();
       }
    }
+
+	@Override
+	public boolean bindColorToClient(String id, String color) {
+		System.out.println("Bind " + color + " to " + id);
+		if(availaleColorsList.contains(color)){
+			availaleColorsList.remove(color);
+			clientColorBindMap.put(id, color);
+			return true;
+		}
+		
+		return false;
+	}
+
+	@Override
+	public List<String> getAvailableColor() {
+		return availaleColorsList;
+	}
 }

@@ -48,7 +48,7 @@ public class WhiteboardClient extends UnicastRemoteObject implements IWhiteboard
    	public void sendLine(Point start, Point end) throws RemoteException
 	{
 	   if (isConnected())
-	      server.line(start, end, this.getCurrentColor());
+	      server.line(start, end, getClientID());
 	}
 	
 	/**
@@ -92,6 +92,10 @@ public class WhiteboardClient extends UnicastRemoteObject implements IWhiteboard
 	   return connect(addresss, Registry.REGISTRY_PORT);
    }
    
+   public IWhiteboardServer getServer(){
+	   return server;
+   }
+   
    public boolean connect(String addresss, int port){
 	   try {
 		   LocateRegistry.getRegistry(port);
@@ -129,6 +133,7 @@ public class WhiteboardClient extends UnicastRemoteObject implements IWhiteboard
 		try {
 			WhiteboardClient client = new WhiteboardClient();
 			client.renderGUI();
+			System.out.println(Color.MAGENTA.toString());
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}

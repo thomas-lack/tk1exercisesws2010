@@ -13,7 +13,7 @@ import javax.swing.*;
  * TK1 Exercise 3 - extended JPanel with mouse listening and drawing capabilities
  * (part of the view in MVC concept)
  * 
- * @author Thomas Lack
+ * @author Thomas Lack, Florian Mueller
  */
 public class PaintPanel extends JPanel implements MouseListener, MouseMotionListener
 {
@@ -24,6 +24,8 @@ public class PaintPanel extends JPanel implements MouseListener, MouseMotionList
    private Point endPoint = null;
    private enum State { IDLE, DRAGGING }
    private State _state = State.IDLE;
+   private BasicStroke strokeAttribute = null;
+   private BasicStroke clearStrokeAttribute = null;
 
    /**
     * constructor
@@ -35,6 +37,16 @@ public class PaintPanel extends JPanel implements MouseListener, MouseMotionList
       this.client = client;
       this.addMouseListener(this);
       this.addMouseMotionListener(this);
+      
+      strokeAttribute = new BasicStroke(
+    		  3.0f, 
+    		  BasicStroke.CAP_ROUND, 
+    		  BasicStroke.JOIN_ROUND);
+      
+      clearStrokeAttribute = new BasicStroke(
+    		  8.0f, 
+    		  BasicStroke.CAP_ROUND, 
+    		  BasicStroke.JOIN_ROUND);
    }
    
    @Override 
@@ -72,6 +84,11 @@ public class PaintPanel extends JPanel implements MouseListener, MouseMotionList
    {
       // get current buffer image as graphic object...
       Graphics2D g2 = buffer.createGraphics();
+      
+      if(color.equals(Color.WHITE))
+    	  g2.setStroke(clearStrokeAttribute);
+      else
+    	  g2.setStroke(strokeAttribute);
       
       // ... so the new line can be added
       g2.setColor(color);
