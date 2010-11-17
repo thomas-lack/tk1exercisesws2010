@@ -8,6 +8,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 import java.util.HashMap;
 import java.util.List;
@@ -192,6 +193,12 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, A
     	  }
     	  
     	  showColorDialog();
+    	  
+    	  try {
+			client.getServer().requestRedraw(client.getClientID());
+		  } catch (RemoteException e1) {
+			  e1.printStackTrace();
+		  }
       }
       
       else if (menuItem.equals("Disconnect")){

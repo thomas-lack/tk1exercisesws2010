@@ -22,4 +22,6 @@ public interface IWhiteboardServer extends Remote
 	
 	public List<String> getAvailableColor() throws RemoteException;
 	public boolean bindColorToClient(String id, String color) throws RemoteException;
+	
+	public void requestRedraw(String id) throws RemoteException;
 }
