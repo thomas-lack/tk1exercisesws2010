@@ -3,6 +3,11 @@ package server;
 import java.awt.Color;
 import java.awt.Point;
 
+/**
+ * Class to represent a line on the Whiteboard
+ * 
+ * @author Florian Mueller
+ */
 public class LineData {
 	public Point start;
 	public Point end;

@@ -6,7 +6,9 @@ import java.util.LinkedList;
 import java.util.Vector;
 
 /**
- * 
+ * Class to store {@link LineData} and notify registered listener
+ * about data changes
+ * (model in MVC concept) 
  * 
  * @author Florian Mueller
  */

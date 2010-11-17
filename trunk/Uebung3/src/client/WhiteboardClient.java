@@ -19,7 +19,6 @@ import server.IWhiteboardServer;
 public class WhiteboardClient extends UnicastRemoteObject implements IWhiteboardClient
 {
 	private static final long serialVersionUID = -227030971339158140L;
-	private Color currentColor = Color.BLACK; // standard color
 	private IWhiteboardServer server;
 	private String clientID = UUID.randomUUID().toString();
 	private WhiteboardGUI gui = null;
@@ -57,25 +56,6 @@ public class WhiteboardClient extends UnicastRemoteObject implements IWhiteboard
 	{
       gui.setVisible(true);
 	}
-	
-	/**
-    * changes the color currently in use
-    * @param color
-    */
-	public void setCurrentColor(Color color)
-   {
-      this.currentColor = color;
-   }
-	
-	/**
-	 * getter for currently set color
-	 * 
-	 * @return current color set by the user
-	 */
-   public Color getCurrentColor()
-   {
-      return currentColor;
-   }
 	
    /**
     * getter for the client ID
@@ -128,7 +108,6 @@ public class WhiteboardClient extends UnicastRemoteObject implements IWhiteboard
 		try {
 			WhiteboardClient client = new WhiteboardClient();
 			client.renderGUI();
-			System.out.println(Color.MAGENTA.toString());
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}

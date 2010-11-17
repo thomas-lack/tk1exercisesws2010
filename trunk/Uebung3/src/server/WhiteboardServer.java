@@ -103,7 +103,7 @@ public class WhiteboardServer extends UnicastRemoteObject implements
 	@Override
 	public boolean bindColorToClient(String id, String color) {
 		if(availaleColorsList.contains(color)){
-			System.out.println("Bind " + color + " to " + id);
+			System.out.println("Server: Bind " + color + " to " + id);
 			availaleColorsList.remove(color);
 			clientColorBindMap.put(id, color);
 			return true;
@@ -126,7 +126,7 @@ public class WhiteboardServer extends UnicastRemoteObject implements
 						lineData.end, 
 						lineData.color);
 			} catch (RemoteException e) {
-				System.err.println("Problem with client " + client.toString());
+				System.err.println("Server: Problem with client " + client.toString());
 				e.printStackTrace();
 			}
 		}
@@ -134,11 +134,12 @@ public class WhiteboardServer extends UnicastRemoteObject implements
 
 	@Override
 	public void requestRedraw(String id) {
+		System.out.println(
+				"Server: Client requests stored lines to redraw them");
 		IWhiteboardClient client = registeredClients.get(id);
 		Collection<LineData> lineDataCollection = 
 			lineDataListModel.getAllElements();
 	      for (LineData lineData : lineDataCollection){
-	    	  System.out.println("redraw");
 	    	  try {
 					client.receiveLine(
 							lineData.start, 
@@ -146,7 +147,7 @@ public class WhiteboardServer extends UnicastRemoteObject implements
 							lineData.color);
 				} catch (RemoteException e) {
 					System.err.println(
-							"Problem with client " + 
+							"Server: Problem with client " + 
 							client.toString());
 					e.printStackTrace();
 				}
@@ -163,10 +164,10 @@ public class WhiteboardServer extends UnicastRemoteObject implements
 			IWhiteboardServer server = new WhiteboardServer();
 			LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
 			Naming.rebind(name, server);
-			System.out.println("WhiteboardServer bound");
+			System.out.println("Server: WhiteboardServer bound");
 		} catch (RemoteException e)
 		{
-			System.err.println("WhiteboardServer exception:");
+			System.err.println("Server: WhiteboardServer exception:");
 			e.printStackTrace();
 			System.exit(1);
 		} catch (MalformedURLException e)
