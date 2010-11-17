@@ -4,20 +4,16 @@ import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
-import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JRadioButtonMenuItem;
 
 /**
  * TK1 Exercise 3 - graphical user interface for the client
@@ -25,11 +21,10 @@ import javax.swing.JRadioButtonMenuItem;
  * 
  * @author Thomas Lack, Florian Mueller
  */
-public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, ActionListener
+public class WhiteboardGUI extends javax.swing.JFrame implements ActionListener
 {
    private static final long serialVersionUID = 1L;
    private WhiteboardClient client;
-   private HashMap<String, Color> colorMap = new HashMap<String, Color>();
    private javax.swing.JMenu clientMenu;
    private javax.swing.JMenuBar menuBar;
    private javax.swing.JMenuItem menuItemConnect;
@@ -59,7 +54,6 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, A
        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
       
        paintPanel.setBackground(Color.WHITE);
-       //paintPanel.addMouseListener(this);
       
        javax.swing.GroupLayout paintPanelLayout = new javax.swing.GroupLayout(paintPanel);
        paintPanel.setLayout(paintPanelLayout);
@@ -137,15 +131,6 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ItemListener, A
    public void drawLine(Point start, Point end, Color color)
    {
       paintPanel.drawLine(start, end, color);
-   }
-   
-   @Override
-   public void itemStateChanged(ItemEvent e)
-   {
-      // register new color if chosen
-      Object comp = e.getSource();
-      String color = ((JRadioButtonMenuItem) comp).getText();
-      client.setCurrentColor(colorMap.get(color));
    }
 
    @Override

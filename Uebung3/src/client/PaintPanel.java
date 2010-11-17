@@ -106,59 +106,40 @@ public class PaintPanel extends JPanel implements MouseListener, MouseMotionList
    @Override
    public void mousePressed(MouseEvent e)
    {
-      // set the current state to mouse dragging / painting
-      _state = State.DRAGGING;
-      
-      // since only one point is given, this will be the start and end point
-      // for the first line
-      startPoint = e.getPoint();
-      endPoint   = startPoint;
-      
-      // inform the server about the new line (dot in this case), 
-      // the user wants to draw
-      try
-      {
-         client.sendLine(startPoint, endPoint);
-      } catch (RemoteException e1)
-      {
-         e1.printStackTrace();
-      }
-            
-      //System.out.println("Mouse pressed: " + _state + "/" + startPoint);
+	  if(MouseEvent.BUTTON1 == e.getButton()){
+	   
+	      // set the current state to mouse dragging / painting
+	      _state = State.DRAGGING;
+	      
+	      
+	      startPoint = e.getPoint();
+	  }
    }
    
    @Override
    public void mouseDragged(MouseEvent e)
    {
-      // just in case... set the current state to mouse dragging / painting
-      _state = State.DRAGGING;
-      
-      // since we are dragging the mouse, start point is already known
-      endPoint = e.getPoint();
-      
-      //System.out.println("Mouse dragged: " + _state + "/" + startPoint);
-      
-      // inform the server about the new line, the user wants to draw
-      try
-      {
-         client.sendLine(startPoint, endPoint);
-      } catch (RemoteException e1)
-      {
-         e1.printStackTrace();
-      }
-      
-      // after invoking the line drawing the current point the mouse points at
-      // is going to be the start point for the next line, as long as the user
-      // keeps on dragging
-      startPoint = endPoint;
+	   if(State.DRAGGING == _state){
+		   try{
+		         client.sendLine(startPoint, e.getPoint());
+		   } catch (RemoteException e1){
+		         e1.printStackTrace();
+		   }
+		   
+		   startPoint = e.getPoint();
+	   }
    }
    
    @Override
    public void mouseReleased(MouseEvent e) {
       // change the current state back to idle / not painting if the mouse button 
       // is released
-      if (_state == State.DRAGGING) 
-      {
+      if (_state == State.DRAGGING) {
+    	  try{
+		         client.sendLine(startPoint, e.getPoint());
+		  } catch (RemoteException e1){
+		         e1.printStackTrace();
+		  }
          _state = State.IDLE;
       }
    }
