@@ -21,11 +21,9 @@ public class PaintPanel extends JPanel implements MouseListener, MouseMotionList
    private BufferedImage buffer = null;
    private WhiteboardClient client = null;
    private Point startPoint = null;
-   private Point endPoint = null;
    private enum State { IDLE, DRAGGING }
    private State _state = State.IDLE;
    private BasicStroke strokeAttribute = null;
-   private BasicStroke clearStrokeAttribute = null;
 
    /**
     * constructor
@@ -40,11 +38,6 @@ public class PaintPanel extends JPanel implements MouseListener, MouseMotionList
       
       strokeAttribute = new BasicStroke(
     		  3.0f, 
-    		  BasicStroke.CAP_ROUND, 
-    		  BasicStroke.JOIN_ROUND);
-      
-      clearStrokeAttribute = new BasicStroke(
-    		  8.0f, 
     		  BasicStroke.CAP_ROUND, 
     		  BasicStroke.JOIN_ROUND);
    }
@@ -82,10 +75,7 @@ public class PaintPanel extends JPanel implements MouseListener, MouseMotionList
       // get current buffer image as graphic object...
       Graphics2D g2 = buffer.createGraphics();
       
-      if(color.equals(Color.WHITE))
-    	  g2.setStroke(clearStrokeAttribute);
-      else
-    	  g2.setStroke(strokeAttribute);
+   	  g2.setStroke(strokeAttribute);
       
       // ... so the new line can be added
       g2.setColor(color);
