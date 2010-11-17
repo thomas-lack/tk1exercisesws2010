@@ -16,7 +16,7 @@
 	</target>
 	
 	<target name="compile" depends="init" description="compile java files">
-		<javac srcdir="${src}" destdir="${build}" />
+		<javac srcdir="${src}" destdir="${build}" includeantruntime="no"/>
 	</target>
 	
 	<target name="run" depends="compile" description="run 1 server and 2 clients">
