@@ -21,7 +21,7 @@ import javax.swing.JOptionPane;
  * TK1 Exercise 3 - graphical user interface for the client
  * (view in MVC concept)
  * 
- * @author Thomas Lack, Florian Mueller
+ * @author Thomas Lack, Florian Mueller, Andre Ester
  */
 public class WhiteboardGUI extends javax.swing.JFrame implements ActionListener
 {
@@ -32,6 +32,11 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ActionListener
    private javax.swing.JMenuItem menuItemConnect;
    private javax.swing.JMenuItem menuItemDisconnect;
    private javax.swing.JMenuItem menuItemExit;
+
+   
+   // TODO : implement "Clear" button
+   // TODO : implement Color changer ?
+   
    private PaintPanel paintPanel;
    
    
@@ -51,7 +56,7 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ActionListener
        menuItemConnect = new javax.swing.JMenuItem();
        menuItemDisconnect = new javax.swing.JMenuItem();
        menuItemExit = new javax.swing.JMenuItem();
-   
+       
        this.setTitle("Client: " + client.getClientID());
        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
       
@@ -74,12 +79,12 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ActionListener
        menuItemConnect.setText("Connect");
        menuItemConnect.addActionListener(this);
        clientMenu.add(menuItemConnect);
-     
+       
        menuItemDisconnect.setText("Disconnect");
        menuItemDisconnect.setEnabled(false);
        menuItemDisconnect.addActionListener(this);
        clientMenu.add(menuItemDisconnect);
-      
+ 
        menuItemExit.setText("Exit");
        menuItemExit.addActionListener(this);
        clientMenu.add(menuItemExit);
@@ -182,6 +187,7 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ActionListener
          menuItemConnect.setEnabled(true);
 		 menuItemDisconnect.setEnabled(false);
       }
+
    }
 
    /**
@@ -189,7 +195,6 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ActionListener
     */
    public void showColorDialog(){
 	   String color = "";
-	  // boolean colorAvailable = false;
 	
 	   HashMap<String, Color> colorMap;
 	   colorMap = new HashMap<String, Color>();
@@ -218,7 +223,6 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ActionListener
 			   
 			   // TODO  write selected color in client.color
 			   
-			   client.color = Color.BLACK;
 			   
 			   if(null == color)
 				   throw new Exception("Colordialog canceled");

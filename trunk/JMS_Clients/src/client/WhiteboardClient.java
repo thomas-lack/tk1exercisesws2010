@@ -19,7 +19,7 @@ public class WhiteboardClient implements IWhiteboardClient, MessageListener
 	 * 
 	 *  DATA for JMS 
 	 *  TODO : visibility  
-	 * 
+	 * 	@author Andre Ester
 	 */
 	
 	String user = ActiveMQConnection.DEFAULT_USER;
@@ -147,7 +147,7 @@ public class WhiteboardClient implements IWhiteboardClient, MessageListener
 			{
 				LineData Line = (LineData)((ObjectMessage) message).getObject();
 				gui.drawLine(Line.start, Line.end, Line.color);
-				System.out.println("Received line with start = "+Line.start+ " end = " +Line.end +" color = "+Line.color );	
+				//System.out.println(" DEBUG : Client : Received line with start = "+Line.start+ " end = " +Line.end +" color = "+Line.color );	
 			}
 			
 			else if(message instanceof TextMessage) {
