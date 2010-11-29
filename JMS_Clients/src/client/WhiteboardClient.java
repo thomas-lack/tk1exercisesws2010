@@ -147,13 +147,13 @@ public class WhiteboardClient implements IWhiteboardClient, MessageListener
 			{
 				LineData Line = (LineData)((ObjectMessage) message).getObject();
 				gui.drawLine(Line.start, Line.end, Line.color);
-				//System.out.println(" DEBUG : Client : Received line with start = "+Line.start+ " end = " +Line.end +" color = "+Line.color );	
+				//System.out.println("DEBUG : Client : Received line with start = "+Line.start+ " end = " +Line.end +" color = "+Line.color );	
 			}
 			
 			else if(message instanceof TextMessage) {
-				System.out.println("Received text message \"" + ((TextMessage)message).getText() + "\"");
+				System.out.println("DEBUG : Client : Received text message \"" + ((TextMessage)message).getText() + "\"");
 			} else {
-				System.out.println("Received non-text message \"" + message.toString() + "\"");
+				System.out.println("DEBUG : Client : Received non-text message \"" + message.toString() + "\"");
 			}
 		} catch (JMSException e) {
 			e.printStackTrace();
