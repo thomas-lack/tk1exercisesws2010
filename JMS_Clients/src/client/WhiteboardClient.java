@@ -146,6 +146,7 @@ public class WhiteboardClient implements IWhiteboardClient, MessageListener
 			if (message instanceof ObjectMessage)
 			{
 				LineData Line = (LineData)((ObjectMessage) message).getObject();
+				gui.drawLine(Line.start, Line.end, Line.color);
 				System.out.println("Received line with start = "+Line.start+ " end = " +Line.end +" color = "+Line.color );	
 			}
 			
