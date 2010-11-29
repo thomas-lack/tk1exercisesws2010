@@ -1,4 +1,4 @@
-package jms_client;
+package client;
 
 import java.util.Collection;
 import java.util.Collections;

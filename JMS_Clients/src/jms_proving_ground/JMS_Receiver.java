@@ -1,4 +1,6 @@
 package jms_proving_ground;
+import java.awt.Point;
+
 import javax.jms.*;
 
 import org.apache.activemq.ActiveMQConnection;
@@ -91,6 +93,14 @@ public class JMS_Receiver implements MessageListener{
 	@Override
 	public void onMessage(Message message) {
 		try {
+			if (message instanceof ObjectMessage)
+			{
+				Point P;
+				P = (Point)((ObjectMessage) message).getObject();
+				
+				System.out.println("Object received :\t"+P);
+			}
+			
 			if (message instanceof TextMessage) {
 				System.out.println("Received text message \"" + ((TextMessage)message).getText() + "\"");
 			} else {

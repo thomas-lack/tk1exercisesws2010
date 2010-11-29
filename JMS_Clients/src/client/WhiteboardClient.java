@@ -1,4 +1,4 @@
-package jms_client;
+package client;
 import java.awt.Color;
 import java.awt.Point;
 //import java.io.Serializable;
@@ -8,8 +8,7 @@ import javax.jms.*;
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
-
-public class WhiteboardClient implements IWhiteboardClient,MessageListener
+public class WhiteboardClient implements IWhiteboardClient, MessageListener
 {
 	private String clientID = UUID.randomUUID().toString();
 	private WhiteboardGUI gui = null;
@@ -38,8 +37,7 @@ public class WhiteboardClient implements IWhiteboardClient,MessageListener
 		super();
 		gui = new WhiteboardGUI(this);
 	}
-   
-   	@Override 	
+   @Override
    	public void receiveLine(Point start, Point end, Color color)
 	{
 		gui.drawLine(start,end,color);
@@ -56,9 +54,8 @@ public class WhiteboardClient implements IWhiteboardClient,MessageListener
 	{
 	   if (isConnected())
 	   {
-		   // TODO: find a proper way to convert lines into messages
-		   // LineData line = new LineData(start, end, color);
-		   Message message = session.createObjectMessage(start);
+		   LineData line = new LineData(start, end, color);
+		   Message message = session.createObjectMessage(line);
 		   producer.send(message);
 	   }
 
@@ -67,9 +64,9 @@ public class WhiteboardClient implements IWhiteboardClient,MessageListener
    	void sendMessage(String text) throws JMSException {
 		TextMessage message = session.createTextMessage(text);
 		
-		System.out.println("DEBUG : Sender : Attempting to send message...");
+		System.out.println("DEBUG : Client : Attempting to send message...");
 		producer.send(message);
-		System.out.println("DEBUG : Sender : Message sent.");
+		System.out.println("DEBUG : Client : Message sent.");
 
 	}
    	
@@ -98,7 +95,7 @@ public class WhiteboardClient implements IWhiteboardClient,MessageListener
 			
 		myConnection = myConnectionFactory.createConnection();
 		myConnection.start();
-		System.out.println("DEBUG : Sender : Connected.");
+		System.out.println("DEBUG : Client : Connected.");
 		state = State.CONNECTED;
 
 		session = myConnection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
@@ -126,7 +123,7 @@ public class WhiteboardClient implements IWhiteboardClient,MessageListener
    {
 		myConnection.close();
 		state = State.DISCONNECTED;
-		System.out.println("DEBUG : Sender: Disconnected.");
+		System.out.println("DEBUG : Client : Disconnected.");
    }
    
 	/**
@@ -148,11 +145,11 @@ public class WhiteboardClient implements IWhiteboardClient,MessageListener
 		try {
 			if (message instanceof ObjectMessage)
 			{
-				// TODO : Convert received Data into a line and add it to the other lines
-
+				LineData Line = (LineData)((ObjectMessage) message).getObject();
+				System.out.println("Received line with start = "+Line.start+ " end = " +Line.end +" color = "+Line.color );	
 			}
 			
-			if (message instanceof TextMessage) {
+			else if(message instanceof TextMessage) {
 				System.out.println("Received text message \"" + ((TextMessage)message).getText() + "\"");
 			} else {
 				System.out.println("Received non-text message \"" + message.toString() + "\"");

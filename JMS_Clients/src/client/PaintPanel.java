@@ -1,4 +1,4 @@
-package jms_client;
+package client;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;

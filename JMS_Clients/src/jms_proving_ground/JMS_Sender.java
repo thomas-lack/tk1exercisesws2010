@@ -1,4 +1,6 @@
 package jms_proving_ground;
+import java.awt.Point;
+
 import javax.jms.*;
 
 import org.apache.activemq.ActiveMQConnection;
@@ -58,10 +60,11 @@ public class JMS_Sender implements MessageListener{
 	}
 	
 	void sendMessage(String text) throws JMSException {
-		TextMessage message = session.createTextMessage(text);
-		
+	//	TextMessage message = session.createTextMessage(text);
+		Point P = new Point(66,7);
+		ObjectMessage M = session.createObjectMessage(P);
 		System.out.println("DEBUG : Sender : Attempting to send message...");
-		producer.send(message);
+		producer.send(M);
 		System.out.println("DEBUG : Sender : Message sent.");
 
 	}
