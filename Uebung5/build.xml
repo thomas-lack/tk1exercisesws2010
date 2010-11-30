@@ -1,32 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="TK1.UE2" default="run" basedir=".">
+<project name="TK1.UE5" default="run" basedir=".">
 	<!-- set global properties -->
 	<property name="src" location="src"/>
 	<property name="build" location="bin"/>
+	<!-- end of global properties -->
 	
+	<!-- set path properties for apache-activemq jar's -->
+	<path id="classpath">  
+	    <fileset dir="E:\apache-activemq-5.3.0" >  
+	        <include name="activemq-all*.jar"/>  
+	    </fileset>  
+	</path>
+	<!-- end of path properties -->
+	
+	<!-- target declaration -->
 	<target name="init" description="create directory tree">
 		<delete dir="${build}" quiet="true" />
 		<mkdir dir="${build}" />
 	</target>
 	
 	<target name="compile" depends="init" description="compile java files">
-		<javac srcdir="${src}" destdir="${build}" includeantruntime="no"/>
+		<javac srcdir="${src}" destdir="${build}" includeantruntime="no">
+			<classpath refid="classpath"/>
+		</javac>
 	</target>
 	
-	<target name="run" depends="compile" description="run 1 server and 2 clients">
+	<target name="run" depends="compile" description="run 2 clients">
 		<parallel>
-			<antcall target="run-server" />
 			<antcall target="run-client" />
 			<antcall target="run-client" />
 		</parallel>
 	</target>
 	
-	<target name="run-server" description="start server with specified port">
-		<java classname="server.WhiteboardServer" classpath="${build}"/>
+	<target name="run-client" description="starting client with parameters">
+		<java classname="client.WhiteboardClient" classpath="${build}" fork="true">
+			<!-- 
+				configure start parameters:
+				(1) jms server adress
+				(2) channel name
+			-->
+			<arg line="tcp://localhost:61616 Whiteboard222"/> 
+			<classpath refid="classpath"/>
+		</java>
 	</target>
-	
-	<target name="run-client" description="start client with specified port">
-		<java classname="client.WhiteboardClient" classpath="${build}" fork="true"/>
-	</target>
+	<!-- end of target declaration -->
 </project>
