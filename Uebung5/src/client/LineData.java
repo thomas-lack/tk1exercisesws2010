@@ -1,15 +1,17 @@
-package server;
+package client;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.io.Serializable;
 
 /**
  * Class to represent a line on the Whiteboard
  * 
  * @author Florian Mueller
  */
-public class LineData {
-	public Point start;
+public class LineData implements Serializable{
+	private static final long serialVersionUID = 5382517318855037494L;
+   public Point start;
 	public Point end;
 	public Color color;
 	

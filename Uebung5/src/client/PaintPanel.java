@@ -5,9 +5,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
-import java.rmi.RemoteException;
-
+import javax.jms.JMSException;
 import javax.swing.*;
+
+import client.LineDataListModel.ILineDataListener;
 
 /**
  * TK1 Exercise 3 - extended JPanel with mouse listening and drawing capabilities
@@ -15,14 +16,15 @@ import javax.swing.*;
  * 
  * @author Thomas Lack, Florian Mueller
  */
-public class PaintPanel extends JPanel implements MouseListener, MouseMotionListener
+public class PaintPanel extends JPanel implements MouseListener, MouseMotionListener, ILineDataListener
 {
    private static final long serialVersionUID = 4217217917346748845L;
    private BufferedImage buffer = null;
    private WhiteboardClient client = null;
+   private WhiteboardGUI parentPanel = null;
    private Point startPoint = null;
    private enum State { IDLE, DRAGGING }
-   private State _state = State.IDLE;
+   private State state = State.IDLE;
    private BasicStroke strokeAttribute = null;
 
    /**
@@ -30,11 +32,13 @@ public class PaintPanel extends JPanel implements MouseListener, MouseMotionList
     * 
     * @param client
     */
-   public PaintPanel(WhiteboardClient client)
+   public PaintPanel(WhiteboardGUI parentPanel, WhiteboardClient client)
    {
+      this.parentPanel = parentPanel;
       this.client = client;
       this.addMouseListener(this);
       this.addMouseMotionListener(this);
+      client.getLineData().registerListener(this);
       
       strokeAttribute = new BasicStroke(
     		  3.0f, 
@@ -85,6 +89,9 @@ public class PaintPanel extends JPanel implements MouseListener, MouseMotionList
       this.repaint();
    }
    
+   /**
+    * reset current paint panel
+    */
    public void clearCanvas(){
 	   Graphics2D g2 = buffer.createGraphics();
 	   g2.setColor(Color.WHITE);
@@ -92,16 +99,29 @@ public class PaintPanel extends JPanel implements MouseListener, MouseMotionList
 	   invalidate();
    }
    
+   @Override
+   public void onDataChanged(LineData lineData)
+   {
+      // listener for the line data model
+      if (lineData != null)
+      {
+         drawLine(lineData.start, lineData.end, lineData.color);
+      }
+      // if we get "null" data, the paint panel has to be resetted
+      else
+      {
+         clearCanvas();
+         this.repaint();
+      }
+      
+   }
    
    @Override
    public void mousePressed(MouseEvent e)
    {
 	  if(MouseEvent.BUTTON1 == e.getButton()){
-	   
 	      // set the current state to mouse dragging / painting
-	      _state = State.DRAGGING;
-	      
-	      
+	      state = State.DRAGGING;
 	      startPoint = e.getPoint();
 	  }
    }
@@ -109,13 +129,14 @@ public class PaintPanel extends JPanel implements MouseListener, MouseMotionList
    @Override
    public void mouseDragged(MouseEvent e)
    {
-	   if(State.DRAGGING == _state){
-		   try{
-		         client.sendLine(startPoint, e.getPoint());
-		   } catch (RemoteException e1){
-		         e1.printStackTrace();
-		   }
-		   
+	   if(State.DRAGGING == state){
+		   try
+         {
+            client.sendLine(startPoint, e.getPoint(), parentPanel.getCurrentColor());
+         } catch (JMSException ex)
+         {
+            parentPanel.showErrorDialog("Error", ex.getMessage());
+         }
 		   startPoint = e.getPoint();
 	   }
    }
@@ -124,13 +145,15 @@ public class PaintPanel extends JPanel implements MouseListener, MouseMotionList
    public void mouseReleased(MouseEvent e) {
       // change the current state back to idle / not painting if the mouse button 
       // is released
-      if (_state == State.DRAGGING) {
-    	  try{
-		         client.sendLine(startPoint, e.getPoint());
-		  } catch (RemoteException e1){
-		         e1.printStackTrace();
-		  }
-         _state = State.IDLE;
+      if (state == State.DRAGGING) {
+         try
+         {
+            client.sendLine(startPoint, e.getPoint(), parentPanel.getCurrentColor());
+         } catch (JMSException ex)
+         {
+            parentPanel.showErrorDialog("Error", ex.getMessage());
+         }
+         state = State.IDLE;
       }
    }
    
