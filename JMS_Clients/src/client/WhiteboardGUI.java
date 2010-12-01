@@ -6,130 +6,181 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-//import java.util.regex.Matcher;
-//import java.util.regex.Pattern;
-
 import javax.jms.JMSException;
+import javax.swing.ButtonGroup;
+import javax.swing.GroupLayout;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JRadioButtonMenuItem;
 
 /**
  * TK1 Exercise 3 - graphical user interface for the client
  * (view in MVC concept)
  * 
- * @author Thomas Lack, Florian Mueller, Andre Ester
+ * @author Thomas Lack, Florian Mueller
  */
-public class WhiteboardGUI extends javax.swing.JFrame implements ActionListener
+public class WhiteboardGUI extends JFrame implements ActionListener
 {
    private static final long serialVersionUID = 1L;
    private WhiteboardClient client;
-   private javax.swing.JMenu clientMenu;
-   private javax.swing.JMenuBar menuBar;
-   private javax.swing.JMenuItem menuItemConnect;
-   private javax.swing.JMenuItem menuItemDisconnect;
-   private javax.swing.JMenuItem menuItemExit;
-
-   
-   // TODO : implement "Clear" button
-   // TODO : implement Color changer ?
-   
+   private JMenu clientMenu;
+   private JMenu colorMenu;
+   private JMenu optionsMenu;
+   private JMenuBar menuBar;
+   private JMenuItem menuItemConnect;
+   private JMenuItem menuItemDisconnect;
+   private JMenuItem menuItemExit;
    private PaintPanel paintPanel;
-   
+   private HashMap<String, Color> colorMap;
+   private Color currentColor = Color.BLACK;
    
    /** Creates new form WhiteboardGUI */
-   public WhiteboardGUI(WhiteboardClient client) {
+   public WhiteboardGUI(WhiteboardClient client) 
+   {
       this.client = client;  
+      initColorMap();
       initComponents();
+   }
+   
+   private void initColorMap()
+   {
+      colorMap = new HashMap<String, Color>();
+      colorMap.put("Black", Color.BLACK);
+      colorMap.put("Red", Color.RED);
+      colorMap.put("Blue", Color.BLUE);
+      colorMap.put("Green", Color.GREEN);
+      colorMap.put("Orange", Color.ORANGE);
+      colorMap.put("Magenta", Color.MAGENTA);
+      colorMap.put("Gray", Color.GRAY);
+      colorMap.put("Yellow", Color.YELLOW);
    }
    
    /**
     * initialize all gui components
     */
-   private void initComponents() {
-       paintPanel = new PaintPanel(client); //new javax.swing.JPanel();
-       menuBar = new javax.swing.JMenuBar();
-       clientMenu = new javax.swing.JMenu();
-       menuItemConnect = new javax.swing.JMenuItem();
-       menuItemDisconnect = new javax.swing.JMenuItem();
-       menuItemExit = new javax.swing.JMenuItem();
-       
+   private void initComponents() 
+   {
+       paintPanel = new PaintPanel(this, client);
+       menuBar = new JMenuBar();
+       clientMenu = new JMenu();
+       colorMenu = new JMenu();
+       optionsMenu = new JMenu();
+       menuItemConnect = new JMenuItem();
+       menuItemDisconnect = new JMenuItem();
+       menuItemExit = new JMenuItem();
+   
        this.setTitle("Client: " + client.getClientID());
        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
       
        paintPanel.setBackground(Color.WHITE);
       
-       javax.swing.GroupLayout paintPanelLayout = new javax.swing.GroupLayout(paintPanel);
-       paintPanel.setLayout(paintPanelLayout);
-       paintPanelLayout.setHorizontalGroup(
-           paintPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-           .addGap(0, 515, Short.MAX_VALUE)
-       );
-       paintPanelLayout.setVerticalGroup(
-           paintPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-           .addGap(0, 380, Short.MAX_VALUE)
-       );
-   
        // client menu
        clientMenu.setText("Client");
-     
+       
        menuItemConnect.setText("Connect");
+       menuItemConnect.setEnabled(!client.isConnected());
        menuItemConnect.addActionListener(this);
        clientMenu.add(menuItemConnect);
-       
+     
        menuItemDisconnect.setText("Disconnect");
-       menuItemDisconnect.setEnabled(false);
+       menuItemDisconnect.setEnabled(client.isConnected());
        menuItemDisconnect.addActionListener(this);
        clientMenu.add(menuItemDisconnect);
- 
+      
        menuItemExit.setText("Exit");
        menuItemExit.addActionListener(this);
        clientMenu.add(menuItemExit);
-      
+       
+       // color menu
+       colorMenu.setText("Color");
+       
+       ButtonGroup colorGroup = new ButtonGroup();
+       
+       for (String color : colorMap.keySet())
+       {
+          JRadioButtonMenuItem colorItem = new JRadioButtonMenuItem(color);
+          if (color.equals("Black"))
+          {
+             colorItem.setSelected(true);
+          }
+          colorItem.addActionListener(this);
+          colorGroup.add(colorItem);
+          colorMenu.add(colorItem);
+       }
+       
+       // options menu
+       optionsMenu.setText("Options");
+       JMenuItem item = new JMenuItem("Clear local Whiteboard");
+       item.addActionListener(this);
+       optionsMenu.add(item);
+       
+       item = new JMenuItem("Clear all Whiteboards");
+       item.addActionListener(this);
+       optionsMenu.add(item);
+       
+       // assign menu bar
        menuBar.add(clientMenu);
+       menuBar.add(colorMenu);
+       menuBar.add(optionsMenu);
        setJMenuBar(menuBar);
-      
-       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(
-    		   getContentPane());
+       
+       // pack layout
+       GroupLayout paintPanelLayout = new GroupLayout(paintPanel);
+       paintPanel.setLayout(paintPanelLayout);
+       paintPanelLayout.setHorizontalGroup(
+           paintPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+           .addGap(0, 515, Short.MAX_VALUE)
+       );
+       paintPanelLayout.setVerticalGroup(
+           paintPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+           .addGap(0, 380, Short.MAX_VALUE)
+       );
+       
+       GroupLayout layout = new GroupLayout(getContentPane());
        
        getContentPane().setLayout(layout);
        layout.setHorizontalGroup(
              layout.createParallelGroup(
-            		 javax.swing.GroupLayout.Alignment.LEADING)
+            		 GroupLayout.Alignment.LEADING)
              .addComponent(
             		 paintPanel, 
-            		 javax.swing.GroupLayout.DEFAULT_SIZE, 
-            		 javax.swing.GroupLayout.DEFAULT_SIZE, 
+            		 GroupLayout.DEFAULT_SIZE, 
+            		 GroupLayout.DEFAULT_SIZE, 
             		 Short.MAX_VALUE)
        );
        layout.setVerticalGroup(
              layout.createParallelGroup(
-            		 javax.swing.GroupLayout.Alignment.LEADING)
+            		 GroupLayout.Alignment.LEADING)
              .addComponent(
             		 paintPanel, 
-            		 javax.swing.GroupLayout.DEFAULT_SIZE, 
-            		 javax.swing.GroupLayout.DEFAULT_SIZE, 
+            		 GroupLayout.DEFAULT_SIZE, 
+            		 GroupLayout.DEFAULT_SIZE, 
             		 Short.MAX_VALUE)
        );
       
        pack();
        
+       // call disconnect if window is closed
        addWindowListener(new WindowAdapter() {
-    	   @Override
-    	public void windowClosing(WindowEvent e) {   
-    		if(client.isConnected())
-    			try{
-    			client.disconnect();
-    			}
-    		catch(JMSException j)
-    		{
-    			
-    		}
-    		super.windowClosing(e);
-    	}
+          @Override
+          public void windowClosing(WindowEvent e) 
+          {   
+             if(client.isConnected())
+             {
+                try
+                {
+                   client.disconnect();
+                } catch (JMSException ex)
+                {
+                  ex.printStackTrace();
+                }
+             }
+             super.windowClosing(e);
+          }
        });
    }
    
@@ -150,100 +201,94 @@ public class WhiteboardGUI extends javax.swing.JFrame implements ActionListener
    {
       String menuItem = ((JMenuItem) e.getSource()).getText();
       
+      // exit
       if (menuItem.equals("Exit")){
-    	 if(client.isConnected())
-			try {
-				client.disconnect();
-			} catch (JMSException e1) {
-				
-				e1.printStackTrace();
-			}
-    	 
-         System.exit(0);
+         if(client.isConnected())
+         {
+            try
+            {
+               client.disconnect();
+            } catch (JMSException ex)
+            {
+               showErrorDialog("Error", ex.getMessage());
+            }
+         }
+    		System.exit(0);
       }
-      else if (menuItem.equals("Connect"))
+      // connect
+      else if (menuItem.equals("Connect")){
+       	String address = JOptionPane.showInputDialog("Enter server address (leave empty if unsure)");
+       	String topic = JOptionPane.showInputDialog("Enter Channel Name (leave empty if unsure)");
+       	  
+       	try
+         {
+            client.connect(address, topic);
+            paintPanel.clearCanvas();
+            connectionStatusChanged();
+         } catch (JMSException ex)
+         {
+            showErrorDialog("Error", ex.getMessage());
+         } 
+      }
+      // disconnect
+      else if (menuItem.equals("Disconnect")){
+         try
+         {
+            client.disconnect();
+            connectionStatusChanged();
+         } catch (JMSException ex)
+         {
+            showErrorDialog("Error", ex.getMessage());
+         }
+      }
+      // color has changed
+      else if (colorMap.containsKey(menuItem))
       {
-    	  try {
-			client.connect();
-		} catch (JMSException e1) {
-		
-			e1.printStackTrace();
-		}
-    	     	  
-    	  menuItemConnect.setEnabled(false);
-    	  menuItemDisconnect.setEnabled(true);
-    	  paintPanel.clearCanvas();
-    	     	  
-    	  showColorDialog();
+         currentColor = colorMap.get(menuItem);
       }
-      else if (menuItem.equals("Disconnect"))
+      // clear local whiteboard
+      else if (menuItem.equals("Clear local Whiteboard"))
       {
-         try {
-			client.disconnect();
-		} catch (JMSException e1) {
-			
-			e1.printStackTrace();
-		}
-         menuItemConnect.setEnabled(true);
-		 menuItemDisconnect.setEnabled(false);
+         client.getLineData().removeAll();
       }
-
+      // clear all whiteboards
+      else if (menuItem.equals("Clear all Whiteboards"))
+      {
+         try
+         {
+            client.sendReset();
+         } catch (JMSException ex)
+         {
+            showErrorDialog("Error", ex.getMessage());
+         }
+      }
    }
-
+   
    /**
-    * Shows a dialog where the user can choose a color 
+    * Create a new message dialog error window with given title and message 
+    * @param title
+    * @param msg
     */
-   public void showColorDialog(){
-	   String color = "";
-	
-	   HashMap<String, Color> colorMap;
-	   colorMap = new HashMap<String, Color>();
-	      colorMap.put("Black", Color.BLACK);
-	      colorMap.put("Red", Color.RED);
-	      colorMap.put("Blue", Color.BLUE);
-	      colorMap.put("Green", Color.GREEN);
-	      colorMap.put("Orange", Color.ORANGE);
-	      colorMap.put("Magenta", Color.MAGENTA);
-	      colorMap.put("Gray", Color.GRAY);
-	      colorMap.put("Yellow", Color.YELLOW);
-	      
-	      
-	   try {
-		 
-			   List<String> availableColors = new LinkedList<String>(colorMap.keySet());
-			   
-			   color = (String) JOptionPane.showInputDialog(
-					   	null,
-					   	"",
-						"Choose a Color",
-						JOptionPane.QUESTION_MESSAGE, 
-						null, 
-						availableColors.toArray(), 
-						availableColors.get(0));
-			   
-			   // TODO  write selected color in client.color
-			   
-			   
-			   if(null == color)
-				   throw new Exception("Colordialog canceled");
-			   
-			  
-	   } catch (Exception e) {
-		   JOptionPane.showMessageDialog(
- 				  null, 
- 				  "Connection failed, please try again " + 
- 				  "\n\n Cause: " + e.getMessage(), 
- 				  "Error", 
- 				  JOptionPane.ERROR_MESSAGE);
-		   
-		   try {
-			client.disconnect();
-		} catch (JMSException e1) {
-			
-			e1.printStackTrace();
-		}
-		   menuItemConnect.setEnabled(true);
-		   menuItemDisconnect.setEnabled(false);
-	   }
+   public void showErrorDialog(String title, String msg)
+   {
+      JOptionPane.showMessageDialog(null, msg, title, JOptionPane.ERROR_MESSAGE);
+   }
+   
+   /**
+    * Getter for the current drawing color
+    * @return Color
+    */
+   public Color getCurrentColor()
+   {
+      return currentColor;
+   }
+   
+   /**
+    * Helper method that can be called, after a connection status change has happened
+    */
+   public void connectionStatusChanged()
+   {
+      menuItemConnect.setEnabled(!client.isConnected());
+      menuItemDisconnect.setEnabled(client.isConnected());
    }
 }
