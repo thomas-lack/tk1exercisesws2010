@@ -10,7 +10,7 @@ import java.util.Vector;
  * about data changes
  * (model in MVC concept) 
  * 
- * @author Florian Mueller
+ * @author Florian Mueller, Thomas Lack
  */
 public class LineDataListModel{
 	public static interface ILineDataListener{
@@ -72,6 +72,7 @@ public class LineDataListModel{
 	 */
 	public void removeAll(){
 		lineDataVector.clear();
+		notifyDataChanged(null); // design by concept: if null is broadcasted, all data was resetted
 	}
 	
 	// notify registered listener if data has changed

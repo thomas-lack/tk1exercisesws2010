@@ -10,11 +10,8 @@ import java.io.Serializable;
  * @author Florian Mueller
  */
 public class LineData implements Serializable{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -8870414451669042628L;
-	public Point start;
+	private static final long serialVersionUID = 5382517318855037494L;
+   public Point start;
 	public Point end;
 	public Color color;
 	
