@@ -8,8 +8,8 @@
 	
 	<!-- set path properties for apache-activemq jar's -->
 	<path id="classpath">  
-	    <fileset dir="E:\apache-activemq-5.3.0" >  
-	        <include name="activemq-all*.jar"/>  
+	    <fileset dir="lib" >  
+	        <include name="*.jar"/>  
 	    </fileset>  
 	</path>
 	<!-- end of path properties -->
@@ -28,19 +28,38 @@
 	
 	<target name="run" depends="compile" description="run 2 clients">
 		<parallel>
-			<antcall target="run-client" />
-			<antcall target="run-client" />
+			<!-- <antcall target="run-server" /> -->
+			<antcall target="run-master" />
+			<antcall target="run-worker" />
 		</parallel>
 	</target>
 	
-	<target name="run-client" description="starting client with parameters">
-		<java classname="client.WhiteboardClient" classpath="${build}" fork="true">
+	<target name="run-master" description="starting client with parameters">
+		<java classname="master.MandelMaster" classpath="${build}" fork="true">
 			<!-- 
 				configure start parameters:
-				(1) jms server adress
-				(2) channel name
+				(1) TupelSpace server adress
+				(2) TupelSpace server port
 			-->
-			<arg line="tcp://localhost:61616 Whiteboard222"/> 
+			<arg line="localhost 8200"/> 
+			<classpath refid="classpath"/>
+		</java>
+	</target>
+	
+	<target name="run-worker" description="starting client with parameters">
+		<java classname="worker.MandelWorker" classpath="${build}" fork="true">
+			<!-- 
+				configure start parameters:
+				(1) TupelSpace server adress
+				(2) TupelSpace server port
+			-->
+			<arg line="localhost 8200"/> 
+			<classpath refid="classpath"/>
+		</java>
+	</target>
+	
+	<target name="run-server" description="starting client with parameters">
+		<java classname="server.TSpaceServer" classpath="${build}" fork="true">
 			<classpath refid="classpath"/>
 		</java>
 	</target>
