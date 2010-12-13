@@ -105,7 +105,7 @@ public class MandelClient extends JFrame implements Callback{
 
 	/**
 	 * @param args
-	 */
+	 **/
 	
 	public void send_request(long id, double xStart, double yStart, 
 			double xEnd, double yEnd, int mandelInit, int imgWidth, 

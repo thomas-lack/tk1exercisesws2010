@@ -13,7 +13,17 @@ public class MandelWorker {
 	
 	TupleSpace server;	
 	MandelRenderResponse response;
+	MandelRenderRequest request;
 	UUID masterId;
+	long id;
+	double xStart;
+	double yStart;
+	double xEnd;
+	double yEnd;
+	int mandelInit;
+	int imgWidth;
+	int imgHeight;
+	int[]data;
 	
 	public MandelWorker(String host, int port) throws TupleSpaceException{
 		server = new TupleSpace(IConstants.MANDEL_CHANNEL, host, port);
@@ -23,6 +33,28 @@ public class MandelWorker {
 				new Field(MandelRenderRequest.class));
 		
 
+	}
+	
+	public void poll(Tuple filter)throws TupleSpaceException
+	{
+		while(server.read(filter) != null)
+		{			
+			Tuple tmp = server.take(filter);
+			masterId = (UUID)tmp.getField(0).getValue();
+			request = (MandelRenderRequest)tmp.getField(1).getValue();
+			xStart = request.xStart;
+			yStart = request.yStart;
+			xEnd = request.xEnd;
+			yEnd = request.yEnd;
+			mandelInit = request.mandelInit;
+			imgHeight = request.imgHeight;
+			imgWidth = request.imgWidth;
+			id = request.id;
+			
+			//TODO : call calculation
+
+			send_response(id, data , imgWidth, imgHeight);
+		}
 	}
 	
 	public void send_response(long id, int[] data, int imgWidth, 
