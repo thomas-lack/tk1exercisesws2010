@@ -24,11 +24,13 @@ public class MandelWorker {
 	int imgWidth;
 	int imgHeight;
 	int[]data;
+	int maxiter = 1000;
+	Tuple responseTemplate;
 	
 	public MandelWorker(String host, int port) throws TupleSpaceException{
 		server = new TupleSpace(IConstants.MANDEL_CHANNEL, host, port);
 
-		Tuple responseTemplate = new Tuple(
+		responseTemplate = new Tuple(
 				new Field(String.class), 
 				new Field(MandelRenderRequest.class));
 		
@@ -50,12 +52,50 @@ public class MandelWorker {
 			imgHeight = request.imgHeight;
 			imgWidth = request.imgWidth;
 			id = request.id;
+			data = new int[imgHeight * imgWidth];
 			
-			//TODO : call calculation
+		    int x, y, i=0;
+		    for (y=0; y<imgHeight; y++)
+		    {
+		      for (x=0; x<imgWidth; x++)
+		      {
+		        data[i++]=iterate(xStart+(xEnd-xStart)*x/(imgWidth-1),
+		                          yStart+(yEnd-yStart)*y/(imgHeight-1))%256;
+		      }
+		    }
 
 			send_response(id, data , imgWidth, imgHeight);
 		}
 	}
+	
+	private int iterate (double x, double y)
+	  {
+	    int iter=0;
+	    double aold, bold, a2old=Double.MAX_VALUE,
+	           b2old=Double.MAX_VALUE, zsquared,a=0,b=0,asquared=0,bsquared=0;
+	    aold=0; bold=0;
+	    asquared=a*a;
+	    a=x;
+	    bsquared=b*b;
+	    b=y;
+	    zsquared=asquared+bsquared;
+	    for (iter=0; iter<maxiter; iter++)
+	    {
+	      a=asquared-bsquared+x;
+	      asquared=a*a;
+	      b=2*aold*b+y;
+	      if (bold==b && aold==a)
+	      {
+	        iter=maxiter-1;
+	      }
+	      bsquared=b*b;
+	      zsquared=asquared+bsquared;
+	      if (zsquared>4)
+	        break;
+	      bold=b; aold=a;
+	    }
+	    return iter;
+	  }
 	
 	public void send_response(long id, int[] data, int imgWidth, 
 			int imgHeight) throws TupleSpaceException
@@ -66,8 +106,20 @@ public class MandelWorker {
 	
 	
 	private void execute() {
-		// TODO Auto-generated method stub
-		
+	try
+	{
+		poll(responseTemplate);
+	}
+	catch(TupleSpaceException e)
+	{
+		e.printStackTrace();
+		JOptionPane.showMessageDialog(
+				null, 
+				e.getMessage(),
+				"",
+				JOptionPane.ERROR_MESSAGE);
+		System.exit(1);
+		}		
 	}
 	
 	public static void main(String[] args) {
