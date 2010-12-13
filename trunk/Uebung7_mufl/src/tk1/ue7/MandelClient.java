@@ -28,6 +28,7 @@ public class MandelClient extends JFrame implements Callback{
 	TupleSpace server;
 	UUID clientId;
 	MandelCanvas canvas;
+	MandelRenderRequest request;
 
 	public MandelClient(String host, int port) throws TupleSpaceException {
 		System.out.println("Try to connect to " + host + ":" + port);
@@ -104,6 +105,17 @@ public class MandelClient extends JFrame implements Callback{
 	/**
 	 * @param args
 	 */
+	
+	public void send_request(long id, double xStart, double yStart, 
+			double xEnd, double yEnd, int mandelInit, int imgWidth, 
+			int imgHeight) throws TupleSpaceException
+	{
+		request = new MandelRenderRequest(id,xStart,yStart,xEnd,yEnd,mandelInit,imgWidth,imgHeight);
+		server.write(clientId.toString(),request);
+	}
+	
+	
+	
 	public static void main(String[] args) {
 		ComandlineTool cmdTool = new ComandlineTool(args);
 		MandelClient client;
