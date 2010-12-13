@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.rmi.MarshalledObject;
 import java.util.UUID;
 
 import javax.swing.JFrame;
@@ -45,7 +46,7 @@ public class MandelClient extends JFrame implements Callback{
 		
 		Tuple responseTemplate = new Tuple(
 				new Field(clientId.toString()), 
-				new Field(MandelRenderResponse.class));
+				new Field(MarshalledObject.class));
 		
 		server.eventRegister(TupleSpace.WRITE, responseTemplate, this);
 		initGUI();
