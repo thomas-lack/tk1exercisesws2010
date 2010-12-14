@@ -34,11 +34,13 @@ public class MandelWorker {
 				new Field(String.class), 
 				new Field(MandelRenderRequest.class));
 		
+		poll(responseTemplate);
 
 	}
 	
 	public void poll(Tuple filter)throws TupleSpaceException
 	{
+		int count = 0;
 		while(server.read(filter) != null)
 		{			
 			Tuple tmp = server.take(filter);
@@ -65,7 +67,9 @@ public class MandelWorker {
 		    }
 
 			send_response(id, data , imgWidth, imgHeight);
+			count++;
 		}
+		System.out.println("DEBUG : WORKER : No more tuple left. " +count+ " tuple processed.");
 	}
 	
 	private int iterate (double x, double y)
@@ -106,6 +110,7 @@ public class MandelWorker {
 	
 	
 	private void execute() {
+	/**
 	try
 	{
 		poll(responseTemplate);
@@ -119,7 +124,8 @@ public class MandelWorker {
 				"",
 				JOptionPane.ERROR_MESSAGE);
 		System.exit(1);
-		}		
+		}
+	**/		
 	}
 	
 	public static void main(String[] args) {
