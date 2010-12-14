@@ -1,5 +1,6 @@
 package tk1.ue7;
 
+import java.rmi.MarshalledObject;
 import java.util.UUID;
 
 import javax.swing.JOptionPane;
@@ -32,7 +33,7 @@ public class MandelWorker {
 
 		responseTemplate = new Tuple(
 				new Field(String.class), 
-				new Field(MandelRenderRequest.class));
+				new Field(MarshalledObject.class));
 		
 		poll(responseTemplate);
 
@@ -69,7 +70,7 @@ public class MandelWorker {
 			send_response(id, data , imgWidth, imgHeight);
 			count++;
 		}
-		System.out.println("DEBUG : WORKER : No more tuple left. " +count+ " tuple processed.");
+		System.out.println("DEBUG : WORKER : No more tuples left. " +count+ " tuples processed.");
 	}
 	
 	private int iterate (double x, double y)
