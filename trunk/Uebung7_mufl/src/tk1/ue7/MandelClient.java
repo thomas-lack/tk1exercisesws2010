@@ -18,6 +18,7 @@ import com.ibm.tspaces.Callback;
 import com.ibm.tspaces.Field;
 import com.ibm.tspaces.SuperTuple;
 import com.ibm.tspaces.Tuple;
+import com.ibm.tspaces.TupleID;
 import com.ibm.tspaces.TupleSpace;
 import com.ibm.tspaces.TupleSpaceException;
 
@@ -150,21 +151,36 @@ public class MandelClient extends JFrame implements Callback
 	@Override
 	public boolean call(String eventName, String tsName, int seqNum, SuperTuple tuple, boolean isException) 
 	{
-	   MandelRenderResponse t = null;
-	   try
-      {
-         t = (MandelRenderResponse) tuple.getField(1).getValue();
-      } catch (TupleSpaceException e)
-      {
-         e.printStackTrace();
-      }	   
+	   if (!isException)
+	   {
+	      MandelRenderResponse t = null;
+	      try
+	      {
+	         t = (MandelRenderResponse) tuple.getField(1).getValue();
+	      } catch (TupleSpaceException e)
+	      {
+	         System.err.println("Client call Error:");
+	         e.printStackTrace();
+	      }     
+	      
+	      // if we got data from a tuple, add it to the canvas
+	      if (t != null)
+	      {
+	         canvas.addSubimage(t.data, coords[t.id][0], coords[t.id][1], t.imgWidth, t.imgHeight);
+	      }
+	      
+	      // try to remove the tuple from tspace, after data has been read
+	      // we can do this in this call method, because it is started in its own threat by parameter
+	      try
+         {
+            server.deleteTupleById(tuple.getTupleID());
+         } catch (TupleSpaceException e)
+         {
+            System.err.println("Client Tuple Remove Error:");
+            e.printStackTrace();
+         }
+	   }
 	   
-      if (t != null)
-      {
-         System.out.println(t);
-         canvas.addSubimage(t.data, coords[t.id][0], coords[t.id][1], t.imgWidth, t.imgHeight);
-      }
-      
 	   return false;
 	}
 
