@@ -46,8 +46,10 @@ public class MandelWorker
 		int count = 0;
 		
 		//while(system.currentMillis - lastRequest < 1000){
-		while(server.read(filter) != null)
-		{			
+		while(true)
+		{
+		if(server.read(filter) != null)
+			{			
 			Tuple tmp = server.take(filter);
 			
 			masterId = (String) tmp.getField(0).getValue();
@@ -78,8 +80,8 @@ public class MandelWorker
 			count++;
 		}
 		//System.out.println("DEBUG : WORKER : No more tuples left. " +count+ " tuples processed.");
+		}
 	}
-	
 	private int iterate (double x, double y)
    {
       int iter=0;
@@ -144,7 +146,7 @@ public class MandelWorker
 		try
 		{
 		   MandelWorker worker = new MandelWorker(cmdTool.getHost(),cmdTool.getPort());
-		   worker.execute();
+		 //  worker.execute();
 		}
 		catch(TupleSpaceException e)
 		{
