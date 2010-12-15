@@ -82,8 +82,8 @@ public class MandelWorker
 
 			send_response(id, data , imgWidth, imgHeight);
 			count++;
-		}
-		//System.out.println("DEBUG : WORKER : No more tuples left. " +count+ " tuples processed.");
+			}
+			//System.out.println("DEBUG : WORKER : No more tuples left. " +count+ " tuples processed.");
 			stop = date.getTime();
 		}
 	}
