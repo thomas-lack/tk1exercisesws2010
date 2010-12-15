@@ -6,7 +6,7 @@
 	<property name="build" location="bin"/>
 	<!-- end of global properties -->
 	
-	<!-- set path properties for apache-activemq jar's -->
+	<!-- set path properties for the tspace library -->
 	<path id="classpath">  
 	    <fileset dir="lib" />  
 	</path>
@@ -24,8 +24,16 @@
 		</javac>
 	</target>
 	
-	<target name="run" depends="compile" description="run 2 clients">
+	<target name="run" depends="compile" description="run server, client and 3 workers">
 		<parallel>
+			<!--
+				Please note:
+				* Workers have an internal timeout interval of 1 minute.
+				* Worker coloring is random - if colors look to similar, consider a restart.
+				* supergay server implementation does not allow a shutdown - please
+					kill the server process for yourself - or run your own server
+					with compiled classes in the classpath as mentioned in "run-server".
+			-->
 			<antcall target="run-server" />
 			<antcall target="run-client" />
 			<antcall target="run-worker" />
@@ -54,6 +62,7 @@
 				(2) tspace server port
 			-->
 			<arg line="localhost 8200"/> 
+			<classpath refid="classpath"/>
 		</java>
 	</target>
 	
@@ -65,6 +74,7 @@
 				(2) tspace server port
 			-->
 			<arg line="localhost 8200"/> 
+			<classpath refid="classpath"/>
 		</java>
 	</target>
 	<!-- end of target declaration -->
