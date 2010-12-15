@@ -5,7 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.rmi.MarshalledObject;
 import java.util.UUID;
 
 import javax.swing.JFrame;
@@ -22,37 +21,42 @@ import com.ibm.tspaces.Tuple;
 import com.ibm.tspaces.TupleSpace;
 import com.ibm.tspaces.TupleSpaceException;
 
-public class MandelClient extends JFrame implements Callback{
-	
+public class MandelClient extends JFrame implements Callback
+{
 	private static final long serialVersionUID = -4488721619640920574L;
 	
-	TupleSpace server;
-	UUID clientId;
-	MandelCanvas canvas;
-	MandelRenderRequest request;
-
-	public MandelClient(String host, int port) throws TupleSpaceException {
+	public UUID clientId;
+	private TupleSpace server;
+	private MandelCanvas canvas;
+	private MandelRenderRequest request;
+	
+	// factor D, in which the canvas will be divided to render a DxD field
+	private final int divideFactor = 2;     
+	//we want to divide the picture in DxD ~equal parts to get D^2 jobs later on
+   private int[][] coords = new int[divideFactor*divideFactor][4];
+	
+	public MandelClient(String host, int port) throws TupleSpaceException 
+	{
 		System.out.println("Try to connect to " + host + ":" + port);
 		Tuple serverState = TupleSpace.status(host, port);
 		
-		if(null == serverState || 
-				serverState.getField(0).getValue().equals("NotRunning")){
-			throw new TupleSpaceException(
-					"No server is running @ " + host + ":" + port);
+		if(null == serverState || serverState.getField(0).getValue().equals("NotRunning"))
+		{
+			throw new TupleSpaceException("No server is running @ " + host + ":" + port);
 		}
 		
 		clientId = UUID.randomUUID();
 		server = new TupleSpace(IConstants.MANDEL_CHANNEL, host, port);
 		
-		Tuple responseTemplate = new Tuple(
-				new Field(clientId.toString()), 
-				new Field(MarshalledObject.class));
+		//Tuple responseTemplate = new Tuple(new Field(clientId.toString()), new Field(MarshalledObject.class));
+		Tuple responseTemplate = new Tuple(new Field(clientId.toString()), new Field(MandelRenderResponse.class));
 		
-		server.eventRegister(TupleSpace.WRITE, responseTemplate, this);
+		server.eventRegister(TupleSpace.WRITE, responseTemplate, this, true);
 		initGUI();
 	}
 	
-	private void initGUI(){
+	private void initGUI()
+	{
 		canvas = new MandelCanvas();
 		
 		addWindowListener(new WindowAdapter() {
@@ -63,17 +67,17 @@ public class MandelClient extends JFrame implements Callback{
 		});
 		
 		JMenuBar menubar = new JMenuBar();
-	    JMenu mandelMenu = new JMenu("Mandel");
-	    JMenuItem refresh = new JMenuItem("Refresh");
-	    refresh.addActionListener(new ActionListener() {
+	   JMenu mandelMenu = new JMenu("Mandel");
+	   JMenuItem refresh = new JMenuItem("Refresh");
+	   refresh.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				recalcMandel();
 			}
 		});
 	    
-	    JMenuItem exit = new JMenuItem("Exit");
-	    exit.addActionListener(new ActionListener() {
+	   JMenuItem exit = new JMenuItem("Exit");
+	   exit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				System.exit(0);
@@ -92,49 +96,106 @@ public class MandelClient extends JFrame implements Callback{
 		getContentPane().add("Center", canvas);
 	}
 	
-	public void recalcMandel(){
-		
+	/**
+	 * start new mandelbrot calculation process
+	 */
+	public void recalcMandel()
+	{
+		//get x,y size of canvas size
+	   int x = canvas.getWidth();
+	   int y = canvas.getHeight();
+	   
+	   
+	   int _x = x / divideFactor;
+      int _y = y / divideFactor;
+            
+	   for(int i=0; i<divideFactor*divideFactor; i++)
+	   {
+	      int _i = i % divideFactor;
+	      
+	      coords[i][0] = _i * _x + _i; //x1
+	      coords[i][1] = i / divideFactor * _y; //y1
+	      coords[i][2] = (_i == divideFactor - 1) ?  x - 1 : coords[i][0] + _x; //x2
+	      coords[i][3] = ( i / divideFactor == divideFactor - 1) ? y - 1 : coords[i][1] + _y; //y2
+	   }
+	   
+	   System.out.println("breite: " + x + ", höhe: " + y);
+	   
+	   for (int i=0; i<divideFactor*divideFactor; i++)
+	   {
+	      System.out.println(i + ": ["+coords[i][0]+","+coords[i][1]+"]-["+coords[i][2]+","+coords[i][3]+"]");
+	   }
+	   
+	   // send requests for divided parts to tspace
+	   for (int i=0; i<divideFactor*divideFactor; i++)
+	   {
+	      try
+         {
+            send_request(i, (double) coords[i][0], (double) coords[i][1], (double) coords[i][2], (double) coords[i][3], 1000, coords[i][2]-coords[i][0], coords[i][3]-coords[i][1]);
+         } catch (TupleSpaceException e)
+         {
+            System.err.println("Client: cannot send tuple to tspace t(o_ot)");
+            e.printStackTrace();
+         }
+	   }
+	   
 	}
 	
 	@Override
-	public boolean call(String eventName, String tsName, int seqNum, 
-			SuperTuple tuple, boolean isException) {
-		
-		return false;
+	public boolean call(String eventName, String tsName, int seqNum, SuperTuple tuple, boolean isException) 
+	{
+	   MandelRenderResponse t = null;
+	   try
+      {
+         t = (MandelRenderResponse) tuple.getField(1).getValue();
+      } catch (TupleSpaceException e)
+      {
+         e.printStackTrace();
+      }	   
+	   
+      if (t != null)
+      {
+         System.out.println(t);
+         canvas.addSubimage(t.data, coords[t.id][0], coords[t.id][1], t.imgWidth, t.imgHeight);
+      }
+      
+	   return false;
 	}
 
 	/**
 	 * @param args
 	 **/
-	
-	public void send_request(long id, double xStart, double yStart, 
+	public void send_request(int id, double xStart, double yStart, 
 			double xEnd, double yEnd, int mandelInit, int imgWidth, 
 			int imgHeight) throws TupleSpaceException
 	{
-		request = new MandelRenderRequest(id,xStart,yStart,xEnd,yEnd,mandelInit,imgWidth,imgHeight);
+		//request = new MandelRenderRequest(id,xStart,yStart,xEnd,yEnd,mandelInit,imgWidth,imgHeight);
+		request = new MandelRenderRequest(0, -2.1, -1.25, 1.6, 0.0, 1000, imgWidth, imgHeight);
+		request = new MandelRenderRequest(1, 1.6, -1.25, 1.1, 0.0, 1000, imgWidth, imgHeight);
+		request = new MandelRenderRequest(2, 2.1, 0.0, 1.6, 1.25, 1000, imgWidth, imgHeight);
+		request = new MandelRenderRequest(3, 1.6, 0.0, 1.1, 1.25, 1000, imgWidth, imgHeight);
+		
 		server.write(clientId.toString(),request);
+		
+		//Tuple t = new Tuple(xStart, yStart, xEnd, yEnd, mandelInit, imgHeight, imgWidth);
+		//server.write("job",clientId.toString(), t);
 	}
+		
 	
-	
-	
-	public static void main(String[] args) {
+	public static void main(String[] args) 
+	{
 		ComandlineTool cmdTool = new ComandlineTool(args);
 		MandelClient client;
 		
-		try {
-			client = new MandelClient(
-					cmdTool.getHost(),
-					cmdTool.getPort());
+		try 
+		{
+			client = new MandelClient(cmdTool.getHost(),cmdTool.getPort());		
 			client.setVisible(true);
-		} catch (TupleSpaceException e) {
+		} catch (TupleSpaceException e) 
+		{
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(
-					null, 
-					e.getMessage(),
-					"",
-					JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null,e.getMessage(),"",JOptionPane.ERROR_MESSAGE);
 			System.exit(1);
 		}
 	}
-
 }
