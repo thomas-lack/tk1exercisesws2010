@@ -52,16 +52,17 @@ public class MandelWorker
 	public void poll(Tuple filter)throws TupleSpaceException
 	{
 		int count = 0; // debug variable counts the number of tuples a worker has processed
-		long start,stop; // runtime limits
+		long start,stop,last_poll; // runtime limits
 		start = System.currentTimeMillis();
-		stop = System.currentTimeMillis();
+		last_poll = stop = System.currentTimeMillis();
 
 		//System.out.println(stop-start);
-		while((stop - start) < 1000) // runs for 1000 ms
+		while((stop - start) < 60000) // runs for 1000 ms
 		{
 		   //if there is a matching tuple  take it
-		   if(server.read(filter) != null)  
-			{			
+		   if((server.read(filter) != null)&&(stop-last_poll > 3000))  
+			{
+			   last_poll = System.currentTimeMillis();
 			   // taken tuple
 			   Tuple tmp = server.waitToTake(filter); 
    			
@@ -110,7 +111,6 @@ public class MandelWorker
 			   }
 			}
 			stop = System.currentTimeMillis(); // refresh time for runtime limitation
-			System.out.println(stop-start);
 		}
 		System.out.println("WORKER : No more tuples left. " +count+ " tuples processed.");
 	}
