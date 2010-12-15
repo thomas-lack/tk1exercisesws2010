@@ -16,8 +16,7 @@ import javax.swing.JComponent;
 public class MandelCanvas extends JComponent
 {
 	private static final long serialVersionUID = 3458391705994850395L;
-   private int numElementsPerRow = 1;
-	private Image image = null;
+   private Image image = null;
 	private ColorModel colorModel;
 	
 	public MandelCanvas() 
@@ -31,11 +30,6 @@ public class MandelCanvas extends JComponent
 		});
 		
 		colorModel = generateColorModel();
-	}
-	
-	public void setElementsPerRow(int elmentsPerRow)
-	{
-		this.numElementsPerRow = elmentsPerRow;
 	}
 	
 	@Override
@@ -58,14 +52,11 @@ public class MandelCanvas extends JComponent
 		
 		MemoryImageSource memImage = new MemoryImageSource(
 				width, height, colorModel, data, 0, width);
-		
-		//int xOffset = (id % numElementsPerRow) * (getWidth() / numElementsPerRow);
-		//int yOffset = (id / numElementsPerRow) * (getHeight() / numElementsPerRow);
-		
+				
 		g2.drawImage(
 				getToolkit().createImage(memImage), 
-				x, //xOffset, 
-				y, //yOffset, 
+				x, 
+				y, 
 				null);
 		this.repaint();
 	}

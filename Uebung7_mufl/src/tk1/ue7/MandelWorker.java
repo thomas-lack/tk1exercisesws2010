@@ -1,6 +1,7 @@
 package tk1.ue7;
 
 import java.util.Date;
+import java.util.UUID;
 
 import javax.swing.JOptionPane;
 
@@ -11,37 +12,34 @@ import com.ibm.tspaces.TupleSpaceException;
 
 public class MandelWorker 
 {
-	TupleSpace server;	
-	String host;
-	int port;
-   
-	MandelRenderResponse response;
-	MandelRenderRequest request;
-	String masterId;
-	int id;
-	double xStart;
-	double yStart;
-	double xEnd;
-	double yEnd;
-	int mandelInit;
-	int imgWidth;
-	int imgHeight;
-	int[] data;
-	int maxiter = 1000;
-	Tuple responseTemplate;
+   private TupleSpace server;	
+   private MandelRenderResponse response;
+	private MandelRenderRequest request;
+	private UUID workerID;
+	private String masterId;
+	private int id;
+	private double xStart;
+	private double yStart;
+	private double xEnd;
+	private double yEnd;
+	private int mandelInit;
+	private int imgWidth;
+	private int imgHeight;
+	private int[] data;
+	private int maxiter = 1000;
+	private Tuple responseTemplate;
 	
 	
 	public MandelWorker(String host, int port) throws TupleSpaceException
 	{
-		this.host = host;
-		this.port = port;
+		workerID = UUID.randomUUID();
 	   server = new TupleSpace(IConstants.MANDEL_CHANNEL, host, port);
-
-		//responseTemplate = new Tuple(new Field(String.class),new Field(MarshalledObject.class));
-	   //template for polling
+				
+		//template for polling
 	   responseTemplate = new Tuple(new Field(String.class), new Field(MandelRenderRequest.class));
 	   
-		poll(responseTemplate);
+		// start polling
+	   poll(responseTemplate);
 	}
 	
 	/**
@@ -51,7 +49,6 @@ public class MandelWorker
 	 *  Once a tuple has been processed the Worker writes a response tuple
 	 *  to the tspace 
 	 */
-
 	public void poll(Tuple filter)throws TupleSpaceException
 	{
 		int count = 0; // debug variable counts the number of tuples a worker has processed
@@ -62,49 +59,66 @@ public class MandelWorker
 		//System.out.println(stop-start);
 		while((stop - start) < 1000) // runs for 1000 ms
 		{
-			if(server.read(filter) != null) //if there is a matching tuple  take it 
+		   //if there is a matching tuple  take it
+		   if(server.read(filter) != null)  
 			{			
-			Tuple tmp = server.take(filter); // taken tuple
-			
-			masterId = (String) tmp.getField(0).getValue(); // get tuples master
-			
-			request = (MandelRenderRequest)tmp.getField(1).getValue(); //extract the data from the tuple ( the MandelRenderRequest)
-			xStart = request.xStart;
-			yStart = request.yStart;
-			xEnd = request.xEnd;
-			yEnd = request.yEnd;
-			mandelInit = request.mandelInit;
-			imgHeight = request.imgHeight;
-			imgWidth = request.imgWidth;
-			id = request.id;
-									
-			data = new int[imgHeight * imgWidth];
-			
-			// calculate the image data
-		    int x, y, i=0;
-		    for (y=0; y<imgHeight; y++)
-		    {
-		      for (x=0; x<imgWidth; x++)
-		      {
-		        data[i++]=iterate(xStart+(xEnd-xStart)*x/(imgWidth-1),
-		                          yStart+(yEnd-yStart)*y/(imgHeight-1))%256;
-		      }
-		    }
-		    // write data to the tspace
-			send_response(id, data , imgWidth, imgHeight);
-			count++; // for debug only
+			   // taken tuple
+			   Tuple tmp = server.waitToTake(filter); 
+   			
+			   // sometimes a tuple is taken beforehand from another worker
+			   // in this case do nothing
+			   if (tmp != null)
+			   {
+			      try
+	            {
+	               // get tuples master
+	               masterId = (String) tmp.getField(0).getValue();
+	               //extract the data from the tuple ( the MandelRenderRequest)
+	               request = (MandelRenderRequest)tmp.getField(1).getValue(); 
+	            }
+	            catch(Exception e)
+	            {
+	               System.err.println("Worker: Error at getting Tuple Information");
+	               System.err.println("Got Tuple? " + tmp);
+	               e.printStackTrace();
+	            }
+	            
+	            xStart = request.xStart;
+	            yStart = request.yStart;
+	            xEnd = request.xEnd;
+	            yEnd = request.yEnd;
+	            mandelInit = request.mandelInit;
+	            imgHeight = request.imgHeight;
+	            imgWidth = request.imgWidth;
+	            id = request.id;
+	                              
+	            data = new int[imgHeight * imgWidth];
+	            
+	            // calculate the image data
+	             int x, y, i=0;
+	             for (y=0; y<imgHeight; y++)
+	             {
+	               for (x=0; x<imgWidth; x++)
+	               {
+	                 data[i++]=iterate(xStart+(xEnd-xStart)*x/(imgWidth-1),
+	                                   yStart+(yEnd-yStart)*y/(imgHeight-1))%256;
+	               }
+	             }
+	             // write data to the tspace
+	            send_response(id, data , imgWidth, imgHeight, workerID.toString());
+	            count++; // for debug only
+			   }
 			}
-			//System.out.println("DEBUG : WORKER : No more tuples left. " +count+ " tuples processed.");
 			stop = System.currentTimeMillis(); // refresh time for runtime limitation
 			System.out.println(stop-start);
 		}
+		System.out.println("WORKER : No more tuples left. " +count+ " tuples processed.");
 	}
 		
 	private int iterate (double x, double y)
    {
       int iter=0;
-      double aold, bold, a2old=Double.MAX_VALUE,
-              b2old=Double.MAX_VALUE, zsquared,a=0,b=0,asquared=0,bsquared=0;
+      double aold, bold, zsquared,a=0,b=0,asquared=0,bsquared=0;
       aold=0; bold=0;
       asquared=a*a;
       a=x;
@@ -142,9 +156,9 @@ public class MandelWorker
 	 *  Writes a Object of the type MandelResponse to the tspace 
 	 */
 	public void send_response(int id, int[] data, int imgWidth, 
-			int imgHeight) throws TupleSpaceException
+			int imgHeight, String workerID) throws TupleSpaceException
 	{
-		response = new MandelRenderResponse(id,data,imgWidth,imgHeight);
+		response = new MandelRenderResponse(id,data,imgWidth,imgHeight,workerID);
 		server.write(masterId,response);
 	}
 
