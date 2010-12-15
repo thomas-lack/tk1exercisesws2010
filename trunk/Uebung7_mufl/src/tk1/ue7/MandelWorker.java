@@ -57,10 +57,10 @@ public class MandelWorker
 		last_poll = stop = System.currentTimeMillis();
 
 		//System.out.println(stop-start);
-		while((stop - start) < 60000) // runs for 1000 ms
+		while((stop - start) < 60000) // runs for 60000 ms = 1 min
 		{
 		   //if there is a matching tuple  take it
-		   if((server.read(filter) != null)&&(stop-last_poll > 3000))  
+		   if((server.read(filter) != null)&&(stop-last_poll > 3000))  // 5 sec delay between polls
 			{
 			   last_poll = System.currentTimeMillis();
 			   // taken tuple
