@@ -2,6 +2,13 @@ package tk1.ue7;
 
 import java.io.Serializable;
 
+/**
+ * A structure that holds the data for 
+ * the calculation of the Mandelbaum 
+ * picture. A object of this type will
+ * be send to a Worker ( MandelWorker)
+ */
+
 public class MandelRenderRequest implements Serializable 
 {
 	private static final long serialVersionUID = 8017669381803399074L;

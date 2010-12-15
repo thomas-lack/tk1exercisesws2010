@@ -44,7 +44,14 @@ public class MandelWorker
 		poll(responseTemplate);
 	}
 	
-	// polling function
+	/**
+	 *  polling function
+	 *  parameter : the template / filter tuple that defines what kind of 
+	 *  tuples the worker should poll
+	 *  Once a tuple has been processed the Worker writes a response tuple
+	 *  to the tspace 
+	 */
+
 	public void poll(Tuple filter)throws TupleSpaceException
 	{
 		int count = 0; // debug variable counts the number of tuples a worker has processed
@@ -122,7 +129,16 @@ public class MandelWorker
       return iter;
    }
 	
-	// send a MandelRenderResponse to the tspace
+	/**
+	 *  send a MandelRenderResponse to the tspace
+	 * @param id
+	 * @param data
+	 * @param imgWidth
+	 * @param imgHeight
+	 * @throws TupleSpaceException
+	 *
+	 *  Writes a Object of the type MandelResponse to the tspace 
+	 */
 	public void send_response(int id, int[] data, int imgWidth, 
 			int imgHeight) throws TupleSpaceException
 	{
