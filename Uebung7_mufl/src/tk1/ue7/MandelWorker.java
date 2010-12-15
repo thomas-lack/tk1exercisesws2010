@@ -1,6 +1,5 @@
 package tk1.ue7;
 
-import java.util.Date;
 import java.util.UUID;
 
 import javax.swing.JOptionPane;
@@ -22,7 +21,7 @@ public class MandelWorker
 	private double yStart;
 	private double xEnd;
 	private double yEnd;
-	private int mandelInit;
+	//private int mandelInit;
 	private int imgWidth;
 	private int imgHeight;
 	private int[] data;
@@ -34,7 +33,9 @@ public class MandelWorker
 	{
 		workerID = UUID.randomUUID();
 	   server = new TupleSpace(IConstants.MANDEL_CHANNEL, host, port);
-				
+		
+	   System.out.println("Worker " + workerID + " started.");
+	   
 		//template for polling
 	   responseTemplate = new Tuple(new Field(String.class), new Field(MandelRenderRequest.class));
 	   
@@ -59,8 +60,10 @@ public class MandelWorker
 		{
 		   //if there is a matching tuple  take it
 		   if(server.read(filter) != null) 
-			{	// get time of latest poll
+			{	
+		      // get time of latest poll
 			   last_poll = System.currentTimeMillis();
+			   
 			   // taken tuple
 			   Tuple tmp = server.waitToTake(filter); 
    			
@@ -86,7 +89,7 @@ public class MandelWorker
 	            yStart = request.yStart;
 	            xEnd = request.xEnd;
 	            yEnd = request.yEnd;
-	            mandelInit = request.mandelInit;
+	            //mandelInit = request.mandelInit;
 	            imgHeight = request.imgHeight;
 	            imgWidth = request.imgWidth;
 	            id = request.id;
@@ -109,20 +112,17 @@ public class MandelWorker
 
 			   }
 			}
-			   //update time
-	            time = System.currentTimeMillis();
-			   	try 
-			   	{
-				   Thread.sleep(3000); // do nothing for 3000 ms to give other workers a go
-			   	} 
-			   	catch (InterruptedException e) 
-			   	{
-				
-				   e.printStackTrace();
-			   	}
-			   
 			
-			
+		   //update time
+         time = System.currentTimeMillis();
+	   	try 
+	   	{
+	   	   Thread.sleep(10); // do nothing for 10 ms to reduce cpu usage
+	   	} 
+	   	catch (InterruptedException e) 
+	   	{
+	   	   e.printStackTrace();
+	   	}
 		}
 		System.out.println("WORKER : Timeout reached. " +count+ " tuples processed.");
 	}
