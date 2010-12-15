@@ -1,5 +1,7 @@
 package tk1.ue7;
 
+import java.util.Date;
+
 import javax.swing.JOptionPane;
 
 import com.ibm.tspaces.Field;
@@ -44,11 +46,13 @@ public class MandelWorker
 	public void poll(Tuple filter)throws TupleSpaceException
 	{
 		int count = 0;
-		
-		//while(system.currentMillis - lastRequest < 1000){
-		while(true)
+		Date date = new Date();
+		long start,stop;
+		start = date.getTime();
+		stop = date.getTime();
+		while((stop - start) < 1000)
 		{
-		if(server.read(filter) != null)
+			if(server.read(filter) != null)
 			{			
 			Tuple tmp = server.take(filter);
 			
@@ -80,8 +84,10 @@ public class MandelWorker
 			count++;
 		}
 		//System.out.println("DEBUG : WORKER : No more tuples left. " +count+ " tuples processed.");
+			stop = date.getTime();
 		}
 	}
+		
 	private int iterate (double x, double y)
    {
       int iter=0;
@@ -119,34 +125,13 @@ public class MandelWorker
 		response = new MandelRenderResponse(id,data,imgWidth,imgHeight);
 		server.write(masterId,response);
 	}
-	
-	
-	private void execute() {
-	
-	try
-	{
-		poll(responseTemplate);
-	}
-	catch(TupleSpaceException e)
-	{
-		e.printStackTrace();
-		JOptionPane.showMessageDialog(
-				null, 
-				e.getMessage(),
-				"",
-				JOptionPane.ERROR_MESSAGE);
-		System.exit(1);
-		}
-			
-	}
-	
+
 	public static void main(String[] args) 
 	{
 		ComandlineTool cmdTool = new ComandlineTool(args);
 		try
 		{
-		   MandelWorker worker = new MandelWorker(cmdTool.getHost(),cmdTool.getPort());
-		 //  worker.execute();
+			new MandelWorker(cmdTool.getHost(),cmdTool.getPort());
 		}
 		catch(TupleSpaceException e)
 		{
