@@ -2,10 +2,11 @@ package tk1.ue7;
 
 import java.io.Serializable;
 
-public class MandelRenderRequest implements Serializable {
+public class MandelRenderRequest implements Serializable 
+{
 	private static final long serialVersionUID = 8017669381803399074L;
 	
-	public long id;
+	public int id;
 	public double xStart;
 	public double yStart;
 	public double xEnd;
@@ -14,9 +15,10 @@ public class MandelRenderRequest implements Serializable {
 	public int imgWidth;
 	public int imgHeight;
 	
-	public MandelRenderRequest(long id, double xStart, double yStart, 
+	public MandelRenderRequest(int id, double xStart, double yStart, 
 			double xEnd, double yEnd, int mandelInit, int imgWidth, 
-			int imgHeight) {
+			int imgHeight) 
+	{
 		super();
 		this.id = id;
 		this.xStart = xStart;

@@ -144,7 +144,8 @@ public class Mandel
   {
     public void actionPerformed(ActionEvent e)
     {
-      new CalcThread(canvas, -2.1, -1.25, 1.1, 1.25, 1000).start();
+      //new CalcThread(canvas, -2.1, -1.25, 1.1, 1.25, 1000).start();
+       new CalcThread(canvas, -2.1, -1.25, -0.6, 0.0, 1000).start();
     }
   }
   class ExitAction implements ActionListener

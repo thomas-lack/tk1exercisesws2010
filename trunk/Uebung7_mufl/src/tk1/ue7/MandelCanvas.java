@@ -7,19 +7,21 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.image.ColorModel;
 import java.awt.image.IndexColorModel;
 import java.awt.image.MemoryImageSource;
 
 import javax.swing.JComponent;
 
-public class MandelCanvas extends JComponent {
-	private int numElementsPerRow = 1;
+public class MandelCanvas extends JComponent
+{
+	private static final long serialVersionUID = 3458391705994850395L;
+   private int numElementsPerRow = 1;
 	private Image image = null;
 	private ColorModel colorModel;
 	
-	public MandelCanvas() {
+	public MandelCanvas() 
+	{
 		addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(ComponentEvent e) {
@@ -31,12 +33,14 @@ public class MandelCanvas extends JComponent {
 		colorModel = generateColorModel();
 	}
 	
-	public void setElementsPerRow(int elmentsPerRow){
+	public void setElementsPerRow(int elmentsPerRow)
+	{
 		this.numElementsPerRow = elmentsPerRow;
 	}
 	
 	@Override
-	protected void paintComponent(Graphics g) {
+	protected void paintComponent(Graphics g) 
+	{
 		Rectangle rect = g.getClipBounds();
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, rect.width, rect.height);
@@ -47,23 +51,27 @@ public class MandelCanvas extends JComponent {
 		super.paintComponent(g);
 	}
 	
-	public void addSubimage(int id, int[] data, int width, int height){
+	//public void addSubimage(int id, int[] data, int width, int height)
+	public void addSubimage(int[] data, int x, int y, int width, int height)
+	{
 		Graphics2D g2 = (Graphics2D) image.getGraphics();
 		
 		MemoryImageSource memImage = new MemoryImageSource(
 				width, height, colorModel, data, 0, width);
 		
-		int xOffset = (id % numElementsPerRow) * (getWidth() / numElementsPerRow);
-		int yOffset = (id / numElementsPerRow) * (getHeight() / numElementsPerRow);
+		//int xOffset = (id % numElementsPerRow) * (getWidth() / numElementsPerRow);
+		//int yOffset = (id / numElementsPerRow) * (getHeight() / numElementsPerRow);
 		
 		g2.drawImage(
 				getToolkit().createImage(memImage), 
-				xOffset, 
-				yOffset, 
+				x, //xOffset, 
+				y, //yOffset, 
 				null);
+		this.repaint();
 	}
 	
-	public void resize(int width, int height){
+	public void resize(int width, int height)
+	{
 		image = createImage(width, height);
 		Graphics2D g2 = (Graphics2D) image.getGraphics();
 		g2.setColor(Color.WHITE);
@@ -75,7 +83,7 @@ public class MandelCanvas extends JComponent {
 		byte[] r = new byte[255];
 		byte[] g = new byte[255];
 		byte[] b = new byte[255];
-		int iter;
+		
 		for (int i = 0; i < 255; i++)
 		{
 			r[i] = (byte)((i * 26) % 250);
