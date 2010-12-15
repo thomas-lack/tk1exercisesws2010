@@ -13,7 +13,7 @@ public class MandelWorker
 {
 	TupleSpace server;	
 	String host;
-   int port;
+	int port;
    
 	MandelRenderResponse response;
 	MandelRenderRequest request;
@@ -38,27 +38,29 @@ public class MandelWorker
 	   server = new TupleSpace(IConstants.MANDEL_CHANNEL, host, port);
 
 		//responseTemplate = new Tuple(new Field(String.class),new Field(MarshalledObject.class));
+	   //template for polling
 	   responseTemplate = new Tuple(new Field(String.class), new Field(MandelRenderRequest.class));
 	   
 		poll(responseTemplate);
 	}
 	
+	// polling function
 	public void poll(Tuple filter)throws TupleSpaceException
 	{
-		int count = 0;
+		int count = 0; // debug variable counts the number of tuples a worker has processed
 		Date date = new Date();
-		long start,stop;
+		long start,stop; // runtime limits
 		start = date.getTime();
 		stop = date.getTime();
-		while((stop - start) < 1000)
+		while((stop - start) < 1000) // runs for 1000 ms
 		{
-			if(server.read(filter) != null)
+			if(server.read(filter) != null) //if there is a matching tuple  take it 
 			{			
-			Tuple tmp = server.take(filter);
+			Tuple tmp = server.take(filter); // taken tuple
 			
-			masterId = (String) tmp.getField(0).getValue();
+			masterId = (String) tmp.getField(0).getValue(); // get tuples master
 			
-			request = (MandelRenderRequest)tmp.getField(1).getValue();
+			request = (MandelRenderRequest)tmp.getField(1).getValue(); //extract the data from the tuple ( the MandelRenderRequest)
 			xStart = request.xStart;
 			yStart = request.yStart;
 			xEnd = request.xEnd;
@@ -70,6 +72,7 @@ public class MandelWorker
 									
 			data = new int[imgHeight * imgWidth];
 			
+			// calculate the image data
 		    int x, y, i=0;
 		    for (y=0; y<imgHeight; y++)
 		    {
@@ -79,12 +82,12 @@ public class MandelWorker
 		                          yStart+(yEnd-yStart)*y/(imgHeight-1))%256;
 		      }
 		    }
-
+		    // write data to the tspace
 			send_response(id, data , imgWidth, imgHeight);
-			count++;
+			count++; // for debug only
 			}
 			//System.out.println("DEBUG : WORKER : No more tuples left. " +count+ " tuples processed.");
-			stop = date.getTime();
+			stop = date.getTime(); // refresh time for runtime limitation
 		}
 	}
 		
@@ -119,6 +122,7 @@ public class MandelWorker
       return iter;
    }
 	
+	// send a MandelRenderResponse to the tspace
 	public void send_response(int id, int[] data, int imgWidth, 
 			int imgHeight) throws TupleSpaceException
 	{
@@ -131,6 +135,7 @@ public class MandelWorker
 		ComandlineTool cmdTool = new ComandlineTool(args);
 		try
 		{
+			// Worker's poll gets initiated in the constructor
 			new MandelWorker(cmdTool.getHost(),cmdTool.getPort());
 		}
 		catch(TupleSpaceException e)
