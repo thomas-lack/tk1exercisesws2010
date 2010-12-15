@@ -220,6 +220,7 @@ public class MandelClient extends JFrame implements Callback
 	         if (!workerColors.containsValue(c))
 	         {
 	            workerColors.put(workerID, c);
+	            System.out.println("Client : registered new worker " + workerID + " who calculated a tile. set its color to #" + c);
 	         }
 	      }
 	   }
