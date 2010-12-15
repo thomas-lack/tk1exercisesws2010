@@ -45,6 +45,7 @@ public class MandelWorker
 	{
 		int count = 0;
 		
+		//while(system.currentMillis - lastRequest < 1000){
 		while(server.read(filter) != null)
 		{			
 			Tuple tmp = server.take(filter);
