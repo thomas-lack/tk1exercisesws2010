@@ -52,16 +52,14 @@ public class MandelWorker
 	public void poll(Tuple filter)throws TupleSpaceException
 	{
 		int count = 0; // debug variable counts the number of tuples a worker has processed
-		long start,stop,last_poll; // runtime limits
-		start = System.currentTimeMillis();
-		last_poll = stop = System.currentTimeMillis();
+		long time,last_poll; // runtime limits		
+		last_poll = time = System.currentTimeMillis();
 
-		//System.out.println(stop-start);
-		while((stop - start) < 60000) // runs for 60000 ms = 1 min
+		while((time-last_poll) < 60000) // timeout 60000 ms = 1 min
 		{
 		   //if there is a matching tuple  take it
-		   if((server.read(filter) != null)&&(stop-last_poll > 3000))  // 5 sec delay between polls
-			{
+		   if(server.read(filter) != null) 
+			{	// get time of latest poll
 			   last_poll = System.currentTimeMillis();
 			   // taken tuple
 			   Tuple tmp = server.waitToTake(filter); 
@@ -108,11 +106,25 @@ public class MandelWorker
 	             // write data to the tspace
 	            send_response(id, data , imgWidth, imgHeight, workerID.toString());
 	            count++; // for debug only
+
 			   }
 			}
-			stop = System.currentTimeMillis(); // refresh time for runtime limitation
+			   //update time
+	            time = System.currentTimeMillis();
+			   	try 
+			   	{
+				   Thread.sleep(3000); // do nothing for 3000 ms to give other workers a go
+			   	} 
+			   	catch (InterruptedException e) 
+			   	{
+				
+				   e.printStackTrace();
+			   	}
+			   
+			
+			
 		}
-		System.out.println("WORKER : No more tuples left. " +count+ " tuples processed.");
+		System.out.println("WORKER : Timeout reached. " +count+ " tuples processed.");
 	}
 		
 	private int iterate (double x, double y)
