@@ -1,5 +1,12 @@
 package tk1.ue7;
 
+/**
+ * A structure that holds the results 
+ * of a Mandelbaum calculation
+ * A object of this type will be returned to the
+ * Master ( MandelClient) 
+ */
+
 import java.io.Serializable;
 
 public class MandelRenderResponse implements Serializable 
