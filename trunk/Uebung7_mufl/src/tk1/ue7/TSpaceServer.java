@@ -1,7 +1,5 @@
 package tk1.ue7;
 
-import java.sql.Time;
-
 import com.ibm.tspaces.TupleSpaceException;
 import com.ibm.tspaces.lock.LMAbortedException;
 import com.ibm.tspaces.server.CheckpointException;
@@ -19,9 +17,10 @@ public class TSpaceServer
       try
       {
          TSServer ts = new TSServer();
+         ts.run();
          ts.shutdown(1); // funktioniert natürlich nicht, warum sollte eine methode auch das machen wonach sie benannt ist?
-         Thread serverThread = new Thread( ts, "TSServer" );
-         serverThread.start();
+         //Thread serverThread = new Thread( ts, "TSServer" );
+         //serverThread.start();
          
       } catch (LMAbortedException e)
       {
