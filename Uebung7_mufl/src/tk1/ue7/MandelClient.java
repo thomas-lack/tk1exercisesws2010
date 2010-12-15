@@ -31,7 +31,7 @@ public class MandelClient extends JFrame implements Callback
 	private MandelRenderRequest request;
 	
 	// factor D, in which the canvas will be divided to render a DxD field
-	private final int divideFactor = 2;     
+	private final int divideFactor = 3;     
 	//we want to divide the picture in DxD ~equal parts to get D^2 jobs later on
    private int[][] coords = new int[divideFactor*divideFactor][4];
 	
@@ -101,11 +101,11 @@ public class MandelClient extends JFrame implements Callback
 	 */
 	public void recalcMandel()
 	{
-		//get x,y size of canvas size
+		//get x,y size of canvas
 	   int x = canvas.getWidth();
 	   int y = canvas.getHeight();
 	   
-	   
+	   // get _x,_y size of grid tile width and height
 	   int _x = x / divideFactor;
       int _y = y / divideFactor;
             
@@ -113,10 +113,10 @@ public class MandelClient extends JFrame implements Callback
 	   {
 	      int _i = i % divideFactor;
 	      
-	      coords[i][0] = _i * _x + _i; //x1
+	      coords[i][0] = _i * _x; //x1
 	      coords[i][1] = i / divideFactor * _y; //y1
-	      coords[i][2] = (_i == divideFactor - 1) ?  x - 1 : coords[i][0] + _x; //x2
-	      coords[i][3] = ( i / divideFactor == divideFactor - 1) ? y - 1 : coords[i][1] + _y; //y2
+	      coords[i][2] = (_i == divideFactor - 1) ?  x : coords[i][0] + _x; //x2
+	      coords[i][3] = ( i / divideFactor == divideFactor - 1) ? y : coords[i][1] + _y; //y2
 	   }
 	   
 	   System.out.println("breite: " + x + ", höhe: " + y);
@@ -127,18 +127,24 @@ public class MandelClient extends JFrame implements Callback
 	   }
 	   
 	   // send requests for divided parts to tspace
+	   double px = (3.0 / x);
+	   double py = (2.5 / y);
 	   for (int i=0; i<divideFactor*divideFactor; i++)
 	   {
 	      try
          {
-            send_request(i, (double) coords[i][0], (double) coords[i][1], (double) coords[i][2], (double) coords[i][3], 1000, coords[i][2]-coords[i][0], coords[i][3]-coords[i][1]);
+            // mandelbrot starting/end values have to be recalculated for the current tile
+	         double startx = px * coords[i][0] -2.1;
+            double starty = py * coords[i][1] -1.25;
+            double endx = px * coords[i][2] -2.1;
+            double endy = py * coords[i][3] -1.25;
+	         send_request(i, startx, starty, endx, endy, 1000, coords[i][2]-coords[i][0], coords[i][3]-coords[i][1]);
          } catch (TupleSpaceException e)
          {
             System.err.println("Client: cannot send tuple to tspace t(o_ot)");
             e.printStackTrace();
          }
 	   }
-	   
 	}
 	
 	@Override
@@ -169,16 +175,8 @@ public class MandelClient extends JFrame implements Callback
 			double xEnd, double yEnd, int mandelInit, int imgWidth, 
 			int imgHeight) throws TupleSpaceException
 	{
-		//request = new MandelRenderRequest(id,xStart,yStart,xEnd,yEnd,mandelInit,imgWidth,imgHeight);
-		request = new MandelRenderRequest(0, -2.1, -1.25, 1.6, 0.0, 1000, imgWidth, imgHeight);
-		request = new MandelRenderRequest(1, 1.6, -1.25, 1.1, 0.0, 1000, imgWidth, imgHeight);
-		request = new MandelRenderRequest(2, 2.1, 0.0, 1.6, 1.25, 1000, imgWidth, imgHeight);
-		request = new MandelRenderRequest(3, 1.6, 0.0, 1.1, 1.25, 1000, imgWidth, imgHeight);
-		
+		request = new MandelRenderRequest(id,xStart,yStart,xEnd,yEnd,mandelInit,imgWidth,imgHeight);
 		server.write(clientId.toString(),request);
-		
-		//Tuple t = new Tuple(xStart, yStart, xEnd, yEnd, mandelInit, imgHeight, imgWidth);
-		//server.write("job",clientId.toString(), t);
 	}
 		
 	
