@@ -5,6 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.HashMap;
+import java.util.Random;
 import java.util.UUID;
 
 import javax.swing.JFrame;
@@ -18,7 +20,6 @@ import com.ibm.tspaces.Callback;
 import com.ibm.tspaces.Field;
 import com.ibm.tspaces.SuperTuple;
 import com.ibm.tspaces.Tuple;
-import com.ibm.tspaces.TupleID;
 import com.ibm.tspaces.TupleSpace;
 import com.ibm.tspaces.TupleSpaceException;
 
@@ -30,29 +31,33 @@ public class MandelClient extends JFrame implements Callback
 	private TupleSpace server;
 	private MandelCanvas canvas;
 	private MandelRenderRequest request;
-	
-	// factor D, in which the canvas will be divided to render a DxD field
-	private final int divideFactor = 3;     
+	private HashMap<String, Integer> workerColors;
+	// factor D, in which the canvas will be divided to render a DxD grid
+	private final int divideFactor = 4;     
 	//we want to divide the picture in DxD ~equal parts to get D^2 jobs later on
    private int[][] coords = new int[divideFactor*divideFactor][4];
 	
+   
 	public MandelClient(String host, int port) throws TupleSpaceException 
 	{
-		System.out.println("Try to connect to " + host + ":" + port);
+		System.out.println("Client: Try to connect to " + host + ":" + port);
 		Tuple serverState = TupleSpace.status(host, port);
 		
 		if(null == serverState || serverState.getField(0).getValue().equals("NotRunning"))
 		{
-			throw new TupleSpaceException("No server is running @ " + host + ":" + port);
+			throw new TupleSpaceException("Client: No server is running @ " + host + ":" + port);
 		}
 		
+		//initialize internal variables
 		clientId = UUID.randomUUID();
 		server = new TupleSpace(IConstants.MANDEL_CHANNEL, host, port);
+		workerColors = new HashMap<String, Integer>();
 		
-		//Tuple responseTemplate = new Tuple(new Field(clientId.toString()), new Field(MarshalledObject.class));
+		// register this object as tuplespace server listener (WRITE)
 		Tuple responseTemplate = new Tuple(new Field(clientId.toString()), new Field(MandelRenderResponse.class));
-		
 		server.eventRegister(TupleSpace.WRITE, responseTemplate, this, true);
+		
+		// initialize gui
 		initGUI();
 	}
 	
@@ -120,12 +125,15 @@ public class MandelClient extends JFrame implements Callback
 	      coords[i][3] = ( i / divideFactor == divideFactor - 1) ? y : coords[i][1] + _y; //y2
 	   }
 	   
+	   // Test output
+	   /*
 	   System.out.println("breite: " + x + ", höhe: " + y);
 	   
 	   for (int i=0; i<divideFactor*divideFactor; i++)
 	   {
 	      System.out.println(i + ": ["+coords[i][0]+","+coords[i][1]+"]-["+coords[i][2]+","+coords[i][3]+"]");
 	   }
+	   */
 	   
 	   // send requests for divided parts to tspace
 	   double px = (3.0 / x);
@@ -166,11 +174,12 @@ public class MandelClient extends JFrame implements Callback
 	      // if we got data from a tuple, add it to the canvas
 	      if (t != null)
 	      {
-	         canvas.addSubimage(t.data, coords[t.id][0], coords[t.id][1], t.imgWidth, t.imgHeight);
+	         int[] colorizedData = colorizeTile(t.data, t.workerID, t.imgWidth);
+	         canvas.addSubimage(colorizedData, coords[t.id][0], coords[t.id][1], t.imgWidth, t.imgHeight);
 	      }
 	      
 	      // try to remove the tuple from tspace, after data has been read
-	      // we can do this in this call method, because it is started in its own threat by parameter
+	      // we can do this in the call method, because it is started in its own threat (via parameter)
 	      try
          {
             server.deleteTupleById(tuple.getTupleID());
@@ -183,7 +192,51 @@ public class MandelClient extends JFrame implements Callback
 	   
 	   return false;
 	}
-
+	
+	/**
+	 * generate a random color for the current worker (if not done before)
+	 * and colorize all left pixels of a given subimage/tile in this color
+	 * 
+	 * @param data
+	 * @param workerID
+	 * @param width
+	 * @return
+	 */
+	private int[] colorizeTile(int[] data, String workerID, int width)
+	{
+	   int c = 0;
+	   // get color previously generated for the current worker (if available)
+	   if (workerColors.containsKey(workerID))
+	   {
+	      c = workerColors.get(workerID);
+	   }
+	   // generate new random color that is not used for the current worker and later use
+	   else
+	   {
+	      Random generator = new Random();
+	      while (!workerColors.containsKey(workerID))
+	      {
+	         c = generator.nextInt(220) + 30;
+	         if (!workerColors.containsValue(c))
+	         {
+	            workerColors.put(workerID, c);
+	         }
+	      }
+	   }
+	   
+	   // draw outermost left pixels in one color to identify the worker, that calculated
+      // the current subimage/tile 
+      for (int i=0; i< data.length; i++)
+      {
+         if (i%width == 0)
+         {
+            data[i] = c;
+         }
+      }
+	   
+	   return data;
+	}
+	
 	/**
 	 * @param args
 	 **/
