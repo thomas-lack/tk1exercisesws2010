@@ -1,8 +1,5 @@
 package tk1.ue9.client;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import net.webservicex.ConvertTemperature;
 import net.webservicex.TemperatureUnit;
 
@@ -17,8 +14,9 @@ public class WebserviceXTemperatureProxy implements ITemperatureConverterProxy {
 	}
 
 	@Override
-	public Set<String> getAvailableTempertures() {
-		HashSet<String> units = new HashSet<String>();
+	public String[] getAvailableTemperatures() {
+		/*
+	   HashSet<String> units = new HashSet<String>();
 		units.add(TemperatureUnit.DEGREE_CELSIUS.value());
 		units.add(TemperatureUnit.DEGREE_FAHRENHEIT.value());
 		units.add(TemperatureUnit.DEGREE_RANKINE.value());
@@ -26,6 +24,8 @@ public class WebserviceXTemperatureProxy implements ITemperatureConverterProxy {
 		units.add(TemperatureUnit.KELVIN.value());
 		
 		return units;
+		*/
+	   return TemperatureUnit.getDesignators();
 	}
 
 	@Override

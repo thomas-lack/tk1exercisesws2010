@@ -9,19 +9,21 @@ import javax.xml.bind.annotation.XmlType;
 public enum TemperatureUnit {
 
     @XmlEnumValue("degreeCelsius")
-    DEGREE_CELSIUS("degreeCelsius"),
+    DEGREE_CELSIUS("degreeCelsius", "Celsius"),
     @XmlEnumValue("degreeFahrenheit")
-    DEGREE_FAHRENHEIT("degreeFahrenheit"),
+    DEGREE_FAHRENHEIT("degreeFahrenheit", "Fahrenheit"),
     @XmlEnumValue("degreeRankine")
-    DEGREE_RANKINE("degreeRankine"),
+    DEGREE_RANKINE("degreeRankine", "Rankine"),
     @XmlEnumValue("degreeReaumur")
-    DEGREE_REAUMUR("degreeReaumur"),
+    DEGREE_REAUMUR("degreeReaumur", "Reaumur"),
     @XmlEnumValue("kelvin")
-    KELVIN("kelvin");
+    KELVIN("kelvin", "Kelvin");
     private final String value;
-
-    TemperatureUnit(String v) {
+    private final String designator;
+    
+    TemperatureUnit(String v, String d) {
         value = v;
+        designator = d;
     }
 
     public String value() {
@@ -30,10 +32,22 @@ public enum TemperatureUnit {
 
     public static TemperatureUnit fromValue(String v) {
         for (TemperatureUnit c: TemperatureUnit.values()) {
-            if (c.value.equals(v)) {
+            if (c.designator.equals(v)) {
                 return c;
             }
         }
         throw new IllegalArgumentException(v);
+    }
+    
+    public static String[] getDesignators()
+    {
+       String[] ret = new String[TemperatureUnit.values().length];
+       int i = 0;
+       for (TemperatureUnit c: TemperatureUnit.values())
+       {
+          ret[i] = c.designator;
+          i++;
+       }
+       return ret;
     }
 }

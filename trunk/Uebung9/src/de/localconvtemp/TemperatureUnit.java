@@ -28,33 +28,47 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum TemperatureUnit {
 
-    @XmlEnumValue("degreeCelsius")
-    DEGREE_CELSIUS("degreeCelsius"),
-    @XmlEnumValue("degreeFahrenheit")
-    DEGREE_FAHRENHEIT("degreeFahrenheit"),
-    @XmlEnumValue("degreeRankine")
-    DEGREE_RANKINE("degreeRankine"),
-    @XmlEnumValue("degreeReaumur")
-    DEGREE_REAUMUR("degreeReaumur"),
-    @XmlEnumValue("kelvin")
-    KELVIN("kelvin");
-    private final String value;
+   @XmlEnumValue("degreeCelsius")
+   DEGREE_CELSIUS("degreeCelsius", "Celsius"),
+   @XmlEnumValue("degreeFahrenheit")
+   DEGREE_FAHRENHEIT("degreeFahrenheit", "Fahrenheit"),
+   @XmlEnumValue("degreeRankine")
+   DEGREE_RANKINE("degreeRankine", "Rankine"),
+   @XmlEnumValue("degreeReaumur")
+   DEGREE_REAUMUR("degreeReaumur", "Reaumur"),
+   @XmlEnumValue("kelvin")
+   KELVIN("kelvin", "Kelvin");
+   private final String value;
+   private final String designator;
+   
+   TemperatureUnit(String v, String d) {
+       value = v;
+       designator = d;
+   }
 
-    TemperatureUnit(String v) {
-        value = v;
-    }
+   public String value() {
+       return value;
+   }
 
-    public String value() {
-        return value;
-    }
-
-    public static TemperatureUnit fromValue(String v) {
-        for (TemperatureUnit c: TemperatureUnit.values()) {
-            if (c.value.equals(v)) {
-                return c;
-            }
-        }
-        throw new IllegalArgumentException(v);
-    }
+   public static TemperatureUnit fromValue(String v) {
+       for (TemperatureUnit c: TemperatureUnit.values()) {
+           if (c.designator.equals(v)) {
+               return c;
+           }
+       }
+       throw new IllegalArgumentException(v);
+   }
+   
+   public static String[] getDesignators()
+   {
+      String[] ret = new String[TemperatureUnit.values().length];
+      int i = 0;
+      for (TemperatureUnit c: TemperatureUnit.values())
+      {
+         ret[i] = c.designator;
+         i++;
+      }
+      return ret;
+   }
 
 }
