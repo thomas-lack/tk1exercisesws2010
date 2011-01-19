@@ -28,21 +28,21 @@ public class ConvertTemperatureWebservice {
 			@WebParam(name = "fromUnit")TemperatureUnit from, 
 			@WebParam(name = "toUnit")TemperatureUnit to){
 		
-		if(from.value().equals(TemperatureUnit.DEGREE_CELSIUS))
+		System.out.println("value:" + value + " from: " + from + " to: " + to);
+		
+		switch(from){
+		case DEGREE_CELSIUS:
 			return DegreeCelsius.convert(value, to);
-		
-		if(from.value().equals(TemperatureUnit.KELVIN))
-			return Kelvin.convert(value, to);
-		
-		if(from.value().equals(TemperatureUnit.DEGREE_FAHRENHEIT))
+		case DEGREE_FAHRENHEIT:
 			return DegreeFahrenheit.convert(value, to);
-		
-		if(from.value().equals(TemperatureUnit.DEGREE_RANKINE))
+		case DEGREE_RANKINE:
 			return DegreeRankine.convert(value, to);
-		
-		if(from.value().equals(TemperatureUnit.DEGREE_REAUMUR))
+		case DEGREE_REAUMUR:
 			return DegreeReaumur.convert(value, to);
-		
+		case KELVIN:
+			return Kelvin.convert(value, to);
+		}
+					
 		return value;
 	}
 }
