@@ -67,8 +67,8 @@ public class ConvertTermatureClient extends JFrame
       targetLabel.setText("Target Temperature:");
       unitLabel.setText("Temperature Unit");
       serviceLabel.setText("Webservice:");
-      degreeSign1.setText("°");
-      degreeSign2.setText("°");
+      degreeSign1.setText("\u00B0"); // print degree sign as unicode
+      degreeSign2.setText("\u00B0");
       
       // source degree row
       sourceTextfield.setText("0.00");

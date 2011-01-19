@@ -1,7 +1,5 @@
 package tk1.ue9.client;
 
-import java.util.Set;
-
 /*
  * Proxy-Interface for temparture converter services
  */
@@ -18,7 +16,6 @@ public interface ITemperatureConverterProxy {
 	 * @return
 	 */
 	public String[] getAvailableTemperatures();
-	//public Set<String> getAvailableTempertures();
 	
 	/**
 	 * Convert <i>value</i> from <i>fromValue</i> to <i>toValue</i>

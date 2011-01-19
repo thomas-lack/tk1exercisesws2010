@@ -14,17 +14,8 @@ public class LocalConvTempProxy implements ITemperatureConverterProxy {
 	}
 
 	@Override
-	public String[] getAvailableTemperatures() {
-		/*
-	   HashSet<String> units = new HashSet<String>();
-		units.add(TemperatureUnit.DEGREE_CELSIUS.value());
-		units.add(TemperatureUnit.DEGREE_FAHRENHEIT.value());
-		units.add(TemperatureUnit.DEGREE_RANKINE.value());
-		units.add(TemperatureUnit.DEGREE_REAUMUR.value());
-		units.add(TemperatureUnit.KELVIN.value());
-		
-		return units;
-		*/
+	public String[] getAvailableTemperatures() 
+	{
 	   return TemperatureUnit.getDesignators();
 	}
 
