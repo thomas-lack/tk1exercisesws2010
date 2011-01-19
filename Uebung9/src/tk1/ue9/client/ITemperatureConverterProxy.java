@@ -13,11 +13,12 @@ public interface ITemperatureConverterProxy {
 	public String getName();
 	
 	/**
-	 * Returns a set of available temerature units
+	 * Returns a set of available temperature units
 	 * 
 	 * @return
 	 */
-	public Set<String> getAvailableTempertures();
+	public String[] getAvailableTemperatures();
+	//public Set<String> getAvailableTempertures();
 	
 	/**
 	 * Convert <i>value</i> from <i>fromValue</i> to <i>toValue</i>
