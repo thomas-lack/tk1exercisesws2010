@@ -11,6 +11,8 @@ import javax.swing.JScrollPane;
 
 public class BankingGUI extends JFrame implements ActionListener
 {
+	private int TotalMoney;
+	
 	private static final long serialVersionUID = -776076003482294953L;
 	private javax.swing.JButton Account1SnapBtn;
 	private javax.swing.JButton Account2SnapBtn;
@@ -239,6 +241,9 @@ public class BankingGUI extends JFrame implements ActionListener
 		}
 		else
 		{
+			clearLog();
+			TotalMoney = Integer.parseInt(TotalAmount.getText());
+			
 			/**
 			 *  TRIGGER SIMULATION START HERE
 			 */
@@ -267,4 +272,20 @@ public class BankingGUI extends JFrame implements ActionListener
 		LogTextField.append(Msg+"\n");
 	}
 	
+	/**
+	 * FUNCTION TO CLEAR THE CONTENT OF THE LOG
+	 */
+	void clearLog()
+	{
+		LogTextField.setText("");
+	}
+	
+	/**
+	 * FUNCTION THAT RETURNS THE TOTAL MONEY OF THE SYSTEM
+	 * @return
+	 */
+	public int getTotal()
+	{
+		return TotalMoney;
+	}
 }
