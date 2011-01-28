@@ -12,6 +12,7 @@ import javax.swing.JScrollPane;
 public class BankingGUI extends JFrame implements ActionListener
 {
 	private int TotalMoney;
+	int Share1,Share2,Share3 = 0;
 	
 	private static final long serialVersionUID = -776076003482294953L;
 	private javax.swing.JButton Account1SnapBtn;
@@ -243,7 +244,7 @@ public class BankingGUI extends JFrame implements ActionListener
 		{
 			clearLog();
 			TotalMoney = Integer.parseInt(TotalAmount.getText());
-			
+			generateShares(TotalMoney);
 			/**
 			 *  TRIGGER SIMULATION START HERE
 			 */
@@ -311,5 +312,66 @@ public class BankingGUI extends JFrame implements ActionListener
 			default:
 				System.out.println("SYSTEM : DEBUG : Invalid Account number. Must be 1,2 oder 3.");				
 		}
+	}
+	/**
+	 * FUNCTION SPLITS THE TOTAL AMOUNT UP INTO "REASONABLE" SHARES
+	 * @param Total
+	 */
+	void generateShares(int Total)
+	{
+		int reserve = (Total/10); 			// the reserve is 10% of the total money per share holder
+		int available = Total-(reserve*2); 	// reserve 10% for 2 account ( to ensure every account receives at least 10% of the pot)
+		Share1 = (int)((Math.random()*100000)%available);	//Share 1 can be anything up to 80% of the total money
+		if(Share1 == available)				// if Share1 should be 80% (which is unlikely) the other share holders											
+		{									// receive the reserved amount
+			Share2 = reserve;
+			Share3 = reserve;
+		}
+		else
+		{
+			available = available-Share1;						// available is the money not dedicated to share holder Share1
+			Share2 = (int)((Math.random()*100000)%available);	//Share 2 can be anything up to the rest amount of the money
+			available = available-Share2;						
+			Share3 = available;
+			// Now to split up the reserve between the two lowest Accounts
+			if(Share1 >= Share2)
+			{
+				if(Share1 >= Share3)
+				{
+					// Share1 is the greatest => Share2 and Share3 get the reserve
+					Share2= Share2+reserve;
+					Share3= Share3+reserve;
+				}
+				else
+				{
+					// Share3 is the greatest => Share1 and Share2 get the reserve
+					Share1= Share1+reserve;
+					Share2= Share2+reserve;
+				}
+			}
+			else
+			{
+				if(Share2 >= Share3)
+				{
+					// Share2 is the greatest => Share1 and Share3 get the reserve
+					Share1= Share1+reserve;
+					Share3= Share3+reserve;
+				}
+				else
+				{
+					// Share3 is the greatest => Share1 and Share2 get the reserve
+					Share1= Share1+reserve;
+					Share2= Share2+reserve;
+				}
+			}			
+		}
+		
+		/**
+		 * TEST OUTPUT
+		 */
+		set_Account(1,String.valueOf(Share1));
+		set_Account(2,String.valueOf(Share2));
+		set_Account(3,String.valueOf(Share3));
+		
 	}
 }
