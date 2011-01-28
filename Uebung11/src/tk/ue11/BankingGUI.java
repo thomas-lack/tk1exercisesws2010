@@ -75,15 +75,15 @@ public class BankingGUI extends JFrame implements ActionListener
 	    Account3NameLabel.setHorizontalAlignment(javax.swing.JLabel.CENTER);
 	    Account3NameLabel.setVerticalAlignment(javax.swing.JLabel.CENTER);
 
-	    Account1BalanceLabel.setText("€");
+	    Account1BalanceLabel.setText("0 €");
 	    Account1BalanceLabel.setHorizontalAlignment(javax.swing.JLabel.CENTER);
 	    Account1BalanceLabel.setVerticalAlignment(javax.swing.JLabel.CENTER);
 
-	    Account2BalanceLabel.setText("€");
+	    Account2BalanceLabel.setText("0 €");
 	    Account2BalanceLabel.setHorizontalAlignment(javax.swing.JLabel.CENTER);
 	    Account2BalanceLabel.setVerticalAlignment(javax.swing.JLabel.CENTER);
 
-	    Account3BalanceLabel.setText("€");
+	    Account3BalanceLabel.setText("0 €");
 	    Account3BalanceLabel.setHorizontalAlignment(javax.swing.JLabel.CENTER);
 	    Account3BalanceLabel.setVerticalAlignment(javax.swing.JLabel.CENTER);
 
@@ -254,6 +254,17 @@ public class BankingGUI extends JFrame implements ActionListener
 	public void showErrorDialog(String title, String msg)
 	{
 	  JOptionPane.showMessageDialog(null, msg, title, JOptionPane.ERROR_MESSAGE);
+	}
+	
+	
+	/**
+	 * FUNCTION THAT ADDS A MESSAGE TO THE LOG WINDOW
+	 * @param Msg
+	 */
+	
+	public void printMsg(String Msg)
+	{
+		LogTextField.append(Msg+"\n");
 	}
 	
 }
