@@ -21,6 +21,11 @@ public class BankingGUI extends JFrame implements ActionListener
 	private javax.swing.JLabel Account1BalanceLabel;
 	private javax.swing.JLabel Account2BalanceLabel;
 	private javax.swing.JLabel Account3BalanceLabel;
+
+	private javax.swing.JLabel BlankLabel;
+	private javax.swing.JLabel TotalAmountLabel;
+	private javax.swing.JTextField TotalAmount;
+	private javax.swing.JButton StartSimBtn;
 	
 	private JScrollPane LogTextScroll;
 	
@@ -45,7 +50,12 @@ public class BankingGUI extends JFrame implements ActionListener
 	    Account1BalanceLabel = new javax.swing.JLabel();
 	    Account2BalanceLabel = new javax.swing.JLabel();
 	    Account3BalanceLabel = new javax.swing.JLabel();
-
+	    
+	    BlankLabel = new javax.swing.JLabel();
+	    TotalAmountLabel = new javax.swing.JLabel();
+	    StartSimBtn = new javax.swing.JButton();
+	    TotalAmount = new javax.swing.JTextField();
+	    
 	    LogTextField.setLineWrap(true);
 	    LogTextField.setWrapStyleWord(true);
 	    LogTextField.setEditable(false);
@@ -76,6 +86,15 @@ public class BankingGUI extends JFrame implements ActionListener
 	    Account3BalanceLabel.setHorizontalAlignment(javax.swing.JLabel.CENTER);
 	    Account3BalanceLabel.setVerticalAlignment(javax.swing.JLabel.CENTER);
 
+	    BlankLabel.setText("");
+	    BlankLabel.setHorizontalAlignment(javax.swing.JLabel.CENTER);
+	    BlankLabel.setVerticalAlignment(javax.swing.JLabel.CENTER);
+	   
+	    TotalAmountLabel.setText("Total €");
+	    TotalAmountLabel.setHorizontalAlignment(javax.swing.JLabel.CENTER);
+	    TotalAmountLabel.setVerticalAlignment(javax.swing.JLabel.CENTER);
+	    
+	    
 	    /**
 	     * INIT OF THE "ACCOUNT 1" SNAPPSHOT BUTTON
 	     */
@@ -105,6 +124,16 @@ public class BankingGUI extends JFrame implements ActionListener
 	        	  Account3SnapBtnActionPerformed(evt);
 	          }
 	      });
+	    
+	    /**
+	     * INIT OF THE "START SIM" BUTTON
+	     */
+	    StartSimBtn.setText("Start Sim");
+	    StartSimBtn.addActionListener(new java.awt.event.ActionListener() {
+	          public void actionPerformed(ActionEvent evt) {
+	        	  StartSimBtnActionPerformed(evt);
+	          }
+	      });
 
       	javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -121,16 +150,20 @@ public class BankingGUI extends JFrame implements ActionListener
                             .addComponent(Account2SnapBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(Account3NameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(Account3BalanceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE) 
-                            .addComponent(Account3SnapBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)));
+                            .addComponent(Account3SnapBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(BlankLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(TotalAmountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(TotalAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(StartSimBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)));
 
         
         layout.setVerticalGroup(
-        		layout.createSequentialGroup()
-        			.addGroup(layout.createParallelGroup()
-        			.addComponent(LogTextScroll, 20, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()                    		              
+        		layout.createParallelGroup()
+        			.addComponent(LogTextScroll, 20, 390, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+        			.addGroup(layout.createParallelGroup()                    		              
                     		.addComponent(Account1NameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)                    		
+                    .addGroup(layout.createParallelGroup()                    		
                     		.addComponent(Account1BalanceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 	                    	.addComponent(Account1SnapBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -145,7 +178,15 @@ public class BankingGUI extends JFrame implements ActionListener
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)                    		
                     		.addComponent(Account3BalanceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        	                .addComponent(Account3SnapBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))));
+        	                .addComponent(Account3SnapBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                	        .addComponent(BlankLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        	.addComponent(TotalAmountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(TotalAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(StartSimBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))));
             pack();
 
 	}
@@ -185,6 +226,13 @@ public class BankingGUI extends JFrame implements ActionListener
 		// TODO Auto-generated method stub
 		
 	}
-
+	/**
+	 *  FUNCTIONALITY FOR THE START "SIMULATION" BUTTON 
+	 */
+	
+	private void StartSimBtnActionPerformed(ActionEvent e) 
+	{
+		
+	}
 	
 }
