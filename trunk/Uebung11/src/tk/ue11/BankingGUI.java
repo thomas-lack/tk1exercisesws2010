@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 
 public class BankingGUI extends JFrame implements ActionListener
@@ -232,7 +233,27 @@ public class BankingGUI extends JFrame implements ActionListener
 	
 	private void StartSimBtnActionPerformed(ActionEvent e) 
 	{
-		
+		if(TotalAmount.getText().equals(""))
+		{
+			showErrorDialog("Total Amount","You must enter a total amount of money that will be randomly shared between the accounts");
+		}
+		else
+		{
+			/**
+			 *  TRIGGER SIMULATION START HERE
+			 */
+		}
+	}
+	
+	/**
+	 * FUNCTION FOR ERROR MESSAGES 
+	 * @param title
+	 * @param msg
+	 */
+	
+	public void showErrorDialog(String title, String msg)
+	{
+	  JOptionPane.showMessageDialog(null, msg, title, JOptionPane.ERROR_MESSAGE);
 	}
 	
 }
