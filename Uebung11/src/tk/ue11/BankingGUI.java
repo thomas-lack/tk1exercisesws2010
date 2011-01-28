@@ -374,4 +374,26 @@ public class BankingGUI extends JFrame implements ActionListener
 		set_Account(3,String.valueOf(Share3));
 		
 	}
+	
+	/**
+	 * FUNCTION THAT RETURNS ONE OF THE THREE SHARES
+	 * @param i
+	 * @return
+	 */
+	public int get_Share(int i)
+	{
+		switch(i)
+		{
+			case 1:
+			    return Share1;
+			case 2:
+			    return Share2;
+			case 3:
+			    return Share3;
+				
+			default:
+				System.out.println("SYSTEM : DEBUG : Invalid Account number. Must be 1,2 oder 3.");
+				return 0;
+		}
+	}
 }
