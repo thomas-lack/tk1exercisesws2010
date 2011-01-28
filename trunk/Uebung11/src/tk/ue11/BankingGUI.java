@@ -288,4 +288,28 @@ public class BankingGUI extends JFrame implements ActionListener
 	{
 		return TotalMoney;
 	}
+	
+	/**
+	 * FUNCTION THAT SETS THE BALANCE OF ACCOUNT 'i' TO THE AMOUNT 'Amount'
+	 * @param i
+	 * @param Amount
+	 */
+	public void set_Account(int i, String Amount)
+	{
+		switch(i)
+		{
+			case 1:
+			    Account1BalanceLabel.setText(Amount+" €");
+				break;
+			case 2:
+			    Account2BalanceLabel.setText(Amount+" €");
+				break;
+			case 3:
+			    Account3BalanceLabel.setText(Amount+" €");
+				break;
+				
+			default:
+				System.out.println("SYSTEM : DEBUG : Invalid Account number. Must be 1,2 oder 3.");				
+		}
+	}
 }
