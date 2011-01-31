@@ -33,8 +33,10 @@ public class AccountSocketSender implements Runnable {
 			InetAddress accountAddress, 
 			int accountPort, 
 			AccountObserverSender observer) 
-			throws SocketException {
-		this.address = accountAddress;
+			throws SocketException 
+	{
+		this.to = to;
+	   this.address = accountAddress;
 		this.port = accountPort;
 		this.observer = observer;
 		
@@ -58,7 +60,7 @@ public class AccountSocketSender implements Runnable {
 	 * Send a transaction over the socket
 	 * @param amount
 	 */
-	public void sendTransaction(String from, double amount){
+	public void sendTransaction(String from, int amount){
 		synchronized (messageQueue) {
 			try {
 				messageQueue.put(
@@ -85,16 +87,25 @@ public class AccountSocketSender implements Runnable {
 	}
 	
 	@Override
-	public void run() {
+	public void run() 
+	{
 		byte[] buffer = new byte[1024];
 		
-		while (true) {			
-			synchronized (socket) {	
-				if(0 == messageQueue.size()){
-					synchronized (messageQueue) {
-						try {
+		while (true) 
+		{			
+			synchronized (socket) 
+			{	
+			   
+			   if(0 == messageQueue.size())
+			   {
+					synchronized (messageQueue) 
+					{
+						try 
+						{
 							messageQueue.wait();
-						} catch (InterruptedException e) {
+						} 
+						catch (InterruptedException e) 
+						{
 							// ignore
 						}
 					}
@@ -102,9 +113,12 @@ public class AccountSocketSender implements Runnable {
 				
 				String message = messageQueue.poll();
 				
-				if(null != message){
-					try {
-						
+				if(null != message)
+				{				   
+					try 
+					{
+						//System.out.println(this.toString() + " generated message: " + message);
+					   
 						// send account packet
 						buffer = message.getBytes();
 						DatagramPacket packet = new DatagramPacket(
@@ -117,7 +131,9 @@ public class AccountSocketSender implements Runnable {
 						observer.sendStringMessage(message);
 												
 						randomDelay();
-					} catch (IOException e) {
+					} 
+					catch (IOException e) 
+					{
 						System.err.println("Error while sending message: " + message);
 					}
 				}

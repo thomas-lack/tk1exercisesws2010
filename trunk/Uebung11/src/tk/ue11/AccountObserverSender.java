@@ -22,8 +22,10 @@ public class AccountObserverSender {
 		socket = new DatagramSocket();
 	}
 	
-	public void sendStringMessage(String message) throws IOException{
-		synchronized (socket) {
+	public void sendStringMessage(String message) throws IOException
+	{
+		synchronized (socket) 
+		{
 			byte[] buffer = new byte[1024];
 			buffer = message.getBytes();
 			DatagramPacket packet = new DatagramPacket(
