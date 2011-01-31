@@ -6,13 +6,16 @@ import java.net.InetAddress;
 import java.net.SocketException;
 
 
-public class ObserverSocketSender {
+/**
+ * Class to send text-messages direct to the observer
+ */
+public class AccountObserverSender {
 	private InetAddress address;
 	private int port;
 	
 	private DatagramSocket socket;
 	
-	public ObserverSocketSender(InetAddress address, int port) throws SocketException {
+	public AccountObserverSender(InetAddress address, int port) throws SocketException {
 		this.address = address;
 		this.port = port;
 		
@@ -23,18 +26,11 @@ public class ObserverSocketSender {
 		synchronized (socket) {
 			byte[] buffer = new byte[1024];
 			buffer = message.getBytes();
-			DatagramPacket packet = new DatagramPacket(buffer, buffer.length,
-					address, port);
-			socket.send(packet);
-		}
-	}
-	
-	public void sendAccoundChangeMessage(double value) throws IOException{
-		synchronized (socket) {
-			byte[] buffer = new byte[1024];
-			buffer = ("accountchange;" + value).getBytes();
-			DatagramPacket packet = new DatagramPacket(buffer, buffer.length,
-					address, port);
+			DatagramPacket packet = new DatagramPacket(
+					buffer, 
+					buffer.length,
+					address, 
+					port);
 			socket.send(packet);
 		}
 	}

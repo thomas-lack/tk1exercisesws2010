@@ -1,39 +1,52 @@
 package tk.ue11;
 
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Random;
 
 import tk.ue11.AccountSocketReceiver.TransactionListener;
 
-public class BankAccount implements Runnable{
+public class BankAccount implements Runnable, TransactionListener{
 	private Random rand;
-	private AccountSocketReceiver receiver1;
-	private AccountSocketSender sender1;
 	
-	private AccountSocketReceiver receiver2;
-	private AccountSocketSender sender2;
+	private String name;
+	private double currentBalance;
+	private Snapshot snapshot;
+	private boolean doSnapshot = false;
 	
-	private TransactionListener account1Listener = new TransactionListener() {
-		@Override
-		public void onTransaction(double amount) {
-		}
+	private AccountSocketReceiver receiver;
+	private AccountSocketSender ichichan;
+	private AccountSocketSender nichan;
+	private AccountObserverSender observerSender;
+	
+	public BankAccount( 
+			int ownPort, int observerPort,
+			int channel1Port, int channel2Port) throws IOException {
 		
-		@Override
-		public void onMarker() {
-		}
-	};
-	
-	private TransactionListener account2Listener = new TransactionListener() {
-		@Override
-		public void onTransaction(double amount) {
-		}
+		// Use 'account' plus first digit of the port as channel name
+		name = "account" + (ownPort % 10);
+		String chan1 = "account" + (channel1Port % 10);
+		String chan2 = "account" + (channel2Port % 10);
 		
-		@Override
-		public void onMarker() {
-		}
-	};
-	
-	public BankAccount(int account1Port, int account2Port, int observerPort) {
+		receiver = new AccountSocketReceiver(ownPort, this);
+		
+		observerSender = new AccountObserverSender(
+				InetAddress.getLocalHost(), 
+				observerPort);
+		
+		ichichan = new AccountSocketSender(
+				chan1, 
+				InetAddress.getLocalHost(), 
+				channel1Port, 
+				observerSender);
+		
+		nichan = new AccountSocketSender(
+				chan2, 
+				InetAddress.getLocalHost(), 
+				channel2Port, 
+				observerSender);
 	}
 	
 	@Override
@@ -46,6 +59,26 @@ public class BankAccount implements Runnable{
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {
-		
+		if(6 != args.length){
+			System.out.println("usage: BankAccount <name> <observer port> " +
+					"<account1 name> <account1 port> " +
+					"<account2 name> <account2 port>");
+			System.exit(-1);
+		}
+		else{
+			
+		}
+	}
+
+	@Override
+	public void onTransaction(String from, String to, double amount) {
+	}
+
+	@Override
+	public void onMarker(String from, String to) {
+	}
+
+	@Override
+	public void onStartSnapshot() {
 	}
 }
