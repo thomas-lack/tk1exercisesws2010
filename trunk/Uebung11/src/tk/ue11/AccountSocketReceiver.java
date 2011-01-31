@@ -5,11 +5,18 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 
+/**
+ * Class to receive messages from another account or the observer 
+ */
 public class AccountSocketReceiver implements Runnable {
-
+	
+	/**
+	 * Interface for message callback
+	 */
 	public static interface TransactionListener{
-		public void onTransaction(double amount);
-		public void onMarker();
+		public void onTransaction(String from, String to, double amount);
+		public void onMarker(String from, String to);
+		public void onStartSnapshot();
 	}
 	
 	DatagramSocket socket;
@@ -39,10 +46,17 @@ public class AccountSocketReceiver implements Runnable {
 				
 				String[] data = new String(packet.getData()).split(";");
 				
-				if(data[0].equalsIgnoreCase("transaction") && 2 == data.length)
-					listener.onTransaction(Double.parseDouble(data[1]));
-				else if(data[0].equals("marker"))
-					listener.onMarker();
+				if(data[0].equalsIgnoreCase("transaction") && 4 == data.length)
+					listener.onTransaction(
+							data[1],
+							data[2],
+							Double.parseDouble(data[3]));
+				else if(data[0].equals("marker") && 3 == data.length)
+					listener.onMarker(
+							data[1],
+							data[2]);
+				else if(data[0].equalsIgnoreCase("startsnapshot"))
+					listener.onStartSnapshot();
 			}
 		}
 	}

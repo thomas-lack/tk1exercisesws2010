@@ -9,17 +9,18 @@ import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * Class to send data over an UDP-Socket 
+ * Class to send data over an UDP-Socket (between accounts) 
  * with an artificial delay between each data 
  */
 public class AccountSocketSender implements Runnable {
-	private InetAddress accountAddress;
-	private int accountPort;
+	private String to;
+	private InetAddress address;
+	private int port;
 	
 	private DatagramSocket socket;
 	private LinkedBlockingQueue<String> messageQueue;
 	private Random rand;
-	private ObserverSocketSender observer;
+	private AccountObserverSender observer;
 	
 	/**
 	 * Contructor with a UDP-Socket to send data over it
@@ -28,10 +29,13 @@ public class AccountSocketSender implements Runnable {
 	 * @throws SocketException 
 	 */
 	public AccountSocketSender(
-			InetAddress accountAddress, int accountPort, ObserverSocketSender observer) 
+			String to,
+			InetAddress accountAddress, 
+			int accountPort, 
+			AccountObserverSender observer) 
 			throws SocketException {
-		this.accountAddress = accountAddress;
-		this.accountPort = accountPort;
+		this.address = accountAddress;
+		this.port = accountPort;
 		this.observer = observer;
 		
 		socket = new DatagramSocket();
@@ -54,11 +58,11 @@ public class AccountSocketSender implements Runnable {
 	 * Send a transaction over the socket
 	 * @param amount
 	 */
-	public void sendTransaction(double amount){
+	public void sendTransaction(String from, double amount){
 		synchronized (messageQueue) {
 			try {
 				messageQueue.put(
-						"transaction;" + amount);
+						"transaction;" + from + ";" + to + ";" + amount);
 				messageQueue.notify();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -69,10 +73,10 @@ public class AccountSocketSender implements Runnable {
 	/**
 	 * Send a marker over the socket
 	 */
-	public void sendMarker(){
+	public void sendMarker(String from){
 		synchronized (messageQueue) {
 			try {
-				messageQueue.put("marker");
+				messageQueue.put("marker;" + from + ";" + to);
 				messageQueue.notify();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -106,8 +110,8 @@ public class AccountSocketSender implements Runnable {
 						DatagramPacket packet = new DatagramPacket(
 								buffer, 
 								buffer.length,
-								accountAddress,
-								accountPort);
+								address,
+								port);
 						socket.send(packet);
 						
 						observer.sendStringMessage(message);
