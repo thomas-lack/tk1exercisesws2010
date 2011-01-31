@@ -8,11 +8,13 @@ import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
+import javax.swing.WindowConstants;
 
 public class BankingGUI extends JFrame implements ActionListener
 {
 	private int TotalMoney;
 	int Share1,Share2,Share3 = 0;
+	private ChandyLamport clController = null;
 	
 	private static final long serialVersionUID = -776076003482294953L;
 	private javax.swing.JButton Account1SnapBtn;
@@ -33,9 +35,12 @@ public class BankingGUI extends JFrame implements ActionListener
 	
 	private JScrollPane LogTextScroll;
 	
-	public BankingGUI()
+	public BankingGUI(ChandyLamport cl)
 	{
-		init();
+		this.clController = cl;
+	   this.setTitle("Chandy Lamport Snapshot");
+	   this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+	   init();
 	}
 	
 	public void init()
@@ -233,7 +238,6 @@ public class BankingGUI extends JFrame implements ActionListener
 	/**
 	 *  FUNCTIONALITY FOR THE START "SIMULATION" BUTTON 
 	 */
-	
 	private void StartSimBtnActionPerformed(ActionEvent e) 
 	{
 		if(TotalAmount.getText().equals(""))
@@ -248,6 +252,9 @@ public class BankingGUI extends JFrame implements ActionListener
 			/**
 			 *  TRIGGER SIMULATION START HERE
 			 */
+			clearLog();
+			StartSimBtn.setEnabled(false); // allowing to start over again, is not thread safe / sockets are still bound
+			clController.startBankAccounts(Share1, Share2, Share3);
 		}
 	}
 	
@@ -295,18 +302,21 @@ public class BankingGUI extends JFrame implements ActionListener
 	 * @param i
 	 * @param Amount
 	 */
-	public void set_Account(int i, String Amount)
+	public void set_Account(int i, int amount)
 	{
-		switch(i)
+		String amountStr = String.valueOf(amount);
+		setShare(i, amount);
+		
+	   switch(i)
 		{
 			case 1:
-			    Account1BalanceLabel.setText(Amount+" \u20AC");
+			    Account1BalanceLabel.setText(amountStr+" \u20AC");
 				break;
 			case 2:
-			    Account2BalanceLabel.setText(Amount+" \u20AC");
+			    Account2BalanceLabel.setText(amountStr+" \u20AC");
 				break;
 			case 3:
-			    Account3BalanceLabel.setText(Amount+" \u20AC");
+			    Account3BalanceLabel.setText(amountStr+" \u20AC");
 				break;
 				
 			default:
@@ -369,9 +379,9 @@ public class BankingGUI extends JFrame implements ActionListener
 		/**
 		 * TEST OUTPUT
 		 */
-		set_Account(1,String.valueOf(Share1));
-		set_Account(2,String.valueOf(Share2));
-		set_Account(3,String.valueOf(Share3));
+		set_Account(1,Share1);
+		set_Account(2,Share2);
+		set_Account(3,Share3);
 		
 	}
 	
@@ -395,5 +405,23 @@ public class BankingGUI extends JFrame implements ActionListener
 				System.out.println("SYSTEM : DEBUG : Invalid Account number. Must be 1,2 oder 3.");
 				return 0;
 		}
+	}
+	
+	public void setShare(int i, int amount)
+	{
+	   switch(i)
+	   {
+	   case 1:
+	      Share1 = amount;
+	      break;
+	   case 2:
+	      Share2 = amount;
+	      break;
+	   case 3:
+	      Share3 = amount;
+	      break;
+	   default:
+	      // do nothing
+	   }
 	}
 }
