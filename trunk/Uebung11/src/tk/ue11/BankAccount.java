@@ -47,6 +47,10 @@ public class BankAccount implements Runnable, TransactionListener{
 				InetAddress.getLocalHost(), 
 				channel2Port, 
 				observerSender);
+		
+		new Thread(receiver).start();
+		new Thread(ichichan).start();
+		new Thread(nichan).start();
 	}
 	
 	@Override
