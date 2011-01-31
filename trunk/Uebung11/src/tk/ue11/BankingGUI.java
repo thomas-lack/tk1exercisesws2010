@@ -78,15 +78,15 @@ public class BankingGUI extends JFrame implements ActionListener
 	    Account3NameLabel.setHorizontalAlignment(javax.swing.JLabel.CENTER);
 	    Account3NameLabel.setVerticalAlignment(javax.swing.JLabel.CENTER);
 
-	    Account1BalanceLabel.setText("0 €");
+	    Account1BalanceLabel.setText("0 \u20AC");
 	    Account1BalanceLabel.setHorizontalAlignment(javax.swing.JLabel.CENTER);
 	    Account1BalanceLabel.setVerticalAlignment(javax.swing.JLabel.CENTER);
 
-	    Account2BalanceLabel.setText("0 €");
+	    Account2BalanceLabel.setText("0 \u20AC");
 	    Account2BalanceLabel.setHorizontalAlignment(javax.swing.JLabel.CENTER);
 	    Account2BalanceLabel.setVerticalAlignment(javax.swing.JLabel.CENTER);
 
-	    Account3BalanceLabel.setText("0 €");
+	    Account3BalanceLabel.setText("0 \u20AC");
 	    Account3BalanceLabel.setHorizontalAlignment(javax.swing.JLabel.CENTER);
 	    Account3BalanceLabel.setVerticalAlignment(javax.swing.JLabel.CENTER);
 
@@ -94,7 +94,7 @@ public class BankingGUI extends JFrame implements ActionListener
 	    BlankLabel.setHorizontalAlignment(javax.swing.JLabel.CENTER);
 	    BlankLabel.setVerticalAlignment(javax.swing.JLabel.CENTER);
 	   
-	    TotalAmountLabel.setText("Total €");
+	    TotalAmountLabel.setText("Total \u20AC");
 	    TotalAmountLabel.setHorizontalAlignment(javax.swing.JLabel.CENTER);
 	    TotalAmountLabel.setVerticalAlignment(javax.swing.JLabel.CENTER);
 	    
@@ -300,13 +300,13 @@ public class BankingGUI extends JFrame implements ActionListener
 		switch(i)
 		{
 			case 1:
-			    Account1BalanceLabel.setText(Amount+" €");
+			    Account1BalanceLabel.setText(Amount+" \u20AC");
 				break;
 			case 2:
-			    Account2BalanceLabel.setText(Amount+" €");
+			    Account2BalanceLabel.setText(Amount+" \u20AC");
 				break;
 			case 3:
-			    Account3BalanceLabel.setText(Amount+" €");
+			    Account3BalanceLabel.setText(Amount+" \u20AC");
 				break;
 				
 			default:
