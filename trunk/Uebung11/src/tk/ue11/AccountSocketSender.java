@@ -12,15 +12,14 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Class to send data over an UDP-Socket 
  * with an artificial delay between each data 
  */
-public class FIFODelayedSender implements Runnable {
+public class AccountSocketSender implements Runnable {
+	private InetAddress accountAddress;
+	private int accountPort;
 	
-	public static final String MARKER = "marker";
-
-	InetAddress address;
-	int port;
-	DatagramSocket socket;
-	LinkedBlockingQueue<String> messageQueue;
-	Random rand;
+	private DatagramSocket socket;
+	private LinkedBlockingQueue<String> messageQueue;
+	private Random rand;
+	private ObserverSocketSender observer;
 	
 	/**
 	 * Contructor with a UDP-Socket to send data over it
@@ -28,10 +27,12 @@ public class FIFODelayedSender implements Runnable {
 	 * @param socket
 	 * @throws SocketException 
 	 */
-	public FIFODelayedSender(InetAddress address, int port) throws SocketException {
-		this.address = address;
-		this.port = port;
-		
+	public AccountSocketSender(
+			InetAddress accountAddress, int accountPort, ObserverSocketSender observer) 
+			throws SocketException {
+		this.accountAddress = accountAddress;
+		this.accountPort = accountPort;
+		this.observer = observer;
 		
 		socket = new DatagramSocket();
 		messageQueue = new LinkedBlockingQueue<String>();
@@ -53,10 +54,11 @@ public class FIFODelayedSender implements Runnable {
 	 * Send a transaction over the socket
 	 * @param amount
 	 */
-	public void sendTransaction(int amount){
+	public void sendTransaction(double amount){
 		synchronized (messageQueue) {
 			try {
-				messageQueue.put("transaction;" + amount);
+				messageQueue.put(
+						"transaction;" + amount);
 				messageQueue.notify();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -80,7 +82,7 @@ public class FIFODelayedSender implements Runnable {
 	
 	@Override
 	public void run() {
-		byte[] buffer = new byte[512];
+		byte[] buffer = new byte[1024];
 		
 		while (true) {			
 			synchronized (socket) {	
@@ -98,14 +100,18 @@ public class FIFODelayedSender implements Runnable {
 				
 				if(null != message){
 					try {
-						System.out.println("send: " + message); 
+						
+						// send account packet
 						buffer = message.getBytes();
 						DatagramPacket packet = new DatagramPacket(
 								buffer, 
 								buffer.length,
-								address,
-								port);
+								accountAddress,
+								accountPort);
 						socket.send(packet);
+						
+						observer.sendStringMessage(message);
+												
 						randomDelay();
 					} catch (IOException e) {
 						System.err.println("Error while sending message: " + message);
