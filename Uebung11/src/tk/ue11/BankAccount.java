@@ -13,7 +13,7 @@ public class BankAccount implements Runnable, TransactionListener{
    private Random rand; 
 	
 	private String name;
-	private int currentBalance;
+	private double currentBalance;
 	private Snapshot snapshot;
 	private boolean doSnapshot = false;
 	
@@ -24,10 +24,9 @@ public class BankAccount implements Runnable, TransactionListener{
 	
 	public BankAccount( 
 			int ownPort, int observerPort, int channel1Port, 
-			int channel2Port, int initialBalance) throws IOException {
+			int channel2Port, double initialBalance) throws IOException {
 		
-		currentBalance = initialBalance;
-	   rand = new Random(System.currentTimeMillis());
+		rand = new Random(System.currentTimeMillis());
 		
 	   // Use 'account' plus last digit of the port as channel name
 		name = "account" + (ownPort % 10);
@@ -55,10 +54,13 @@ public class BankAccount implements Runnable, TransactionListener{
 		new Thread(receiver).start();
       new Thread(ichichan).start();
       new Thread(nichan).start();
+      
+      // set initial account balance
+      setCurrentBalance(initialBalance);
 	}
 	
 	@Override
-	public void run() 
+	public synchronized void run() 
 	{
 		while (true)
 		{
@@ -66,7 +68,8 @@ public class BankAccount implements Runnable, TransactionListener{
 		   
 		   if (currentBalance > 0)
 	      {
-	         int transferAmount = rand.nextInt(currentBalance) + 1;
+	         int tmpBalance = (int) currentBalance;
+		      int transferAmount = rand.nextInt(tmpBalance) + 1;
 	         
 	         if (transferAmount <= currentBalance)
 	         {
@@ -85,7 +88,7 @@ public class BankAccount implements Runnable, TransactionListener{
 		}
 	};
 		
-	public void setCurrentBalance(int balance)
+	public void setCurrentBalance(double balance)
 	{
 	   currentBalance = balance;
 	   System.out.println(name + " Balance set to " + currentBalance);
@@ -96,16 +99,16 @@ public class BankAccount implements Runnable, TransactionListener{
 	   return currentBalance;
 	}
 	
-	public void addToCurrentBalance(int amount)
+	public void addToCurrentBalance(double amount)
 	{
 	   currentBalance += amount;
-	   //System.out.println(name + " Balance added: " + amount + " // new Balance: " + currentBalance);
+	   System.out.println(name + " Balance added: " + amount + " // new Balance: " + currentBalance);
 	}
 	
-	public void removeFromCurrentBalance(int amount)
+	public void removeFromCurrentBalance(double amount)
 	{
 	   currentBalance -= amount;
-	   //System.out.println(name + " Balance removed: " + amount + " // new Balance: " + currentBalance);
+	   System.out.println(name + " Balance removed: " + amount + " // new Balance: " + currentBalance);
 	}
 	
 	/**
@@ -124,10 +127,10 @@ public class BankAccount implements Runnable, TransactionListener{
    }
 	
 	@Override
-	public void onTransaction(String from, String to, int amount) {
+	public void onTransaction(String from, String to, String amount) {
 	   if (to.equals(name))
 	   {
-	      addToCurrentBalance(amount);
+	      addToCurrentBalance(Double.parseDouble(amount));
 	   }
 	}
 
