@@ -46,11 +46,11 @@ public class AccountSocketSender implements Runnable {
 	}
 	
 	/**
-	 * Produce a delay between 1s and 5s 
+	 * Produce a delay between 5s and 10s 
 	 */
 	public void randomDelay(){
 		try {
-			Thread.sleep(Math.abs((rand.nextInt() + 1000) % 5000));
+			Thread.sleep(Math.abs((rand.nextInt() + 5000) % 10000));
 		} catch (InterruptedException e) {
 			// ignore
 		}
@@ -66,6 +66,9 @@ public class AccountSocketSender implements Runnable {
 				messageQueue.put(
 						"transaction;" + from + ";" + to + ";" + amount);
 				messageQueue.notify();
+				
+				System.out.println("Message posted: " + "transaction;" + from + ";" + to + ";" + amount);
+				
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} 
