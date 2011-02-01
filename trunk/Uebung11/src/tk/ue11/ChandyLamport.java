@@ -69,12 +69,12 @@ public class ChandyLamport implements MessageListener
       gui.set_Account(fromAcc, fromAccBalance);
       gui.set_Account(toAcc, toAccBalance);
       
-      // send message notification to gui output textfield
+      //send message notification to gui output textfield
       String msg = "Transfer: " + from + " -> " + to + " (" + tmpAmount + " \u20AC)";
-      gui.printMsg(msg);
-      System.out.println("\n/////gui <-> observer processing block/////\n" + msg);
-      System.out.println(debugMsg1);
-      System.out.println(debugMsg2 + "\n/////end of block /////\n");
+//      gui.printMsg(msg);
+//      System.out.println("\n/////gui <-> observer processing block/////\n" + msg);
+//      System.out.println(debugMsg1);
+//      System.out.println(debugMsg2 + "\n/////end of block /////\n");
    }
    
    /**

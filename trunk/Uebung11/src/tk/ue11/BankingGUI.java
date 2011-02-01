@@ -35,6 +35,10 @@ public class BankingGUI extends JFrame implements ActionListener
 	
 	private JScrollPane LogTextScroll;
 	
+	private int acc1 = 0;
+	private int acc2 = 0;
+	private int acc3 = 0;
+	
 	public BankingGUI(ChandyLamport cl)
 	{
 		this.clController = cl;
@@ -311,17 +315,22 @@ public class BankingGUI extends JFrame implements ActionListener
 		{
 			case 1:
 			    Account1BalanceLabel.setText(amountStr+" \u20AC");
+			    Share1 = amount;
 				break;
 			case 2:
 			    Account2BalanceLabel.setText(amountStr+" \u20AC");
+			    Share2 = amount;
 				break;
 			case 3:
 			    Account3BalanceLabel.setText(amountStr+" \u20AC");
+			    Share3 = amount;
 				break;
 				
 			default:
 				System.out.println("SYSTEM : DEBUG : Invalid Account number. Must be 1,2 oder 3.");				
 		}
+	   
+	   setTitle("Gessamt: " + (Share1 + Share2 + Share3)); 
 	}
 	/**
 	 * FUNCTION SPLITS THE TOTAL AMOUNT UP INTO "REASONABLE" SHARES

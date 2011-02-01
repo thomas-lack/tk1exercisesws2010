@@ -69,7 +69,7 @@ public class BankAccount implements Runnable, TransactionListener{
 		   if (currentBalance > 0)
 	      {
 	         int tmpBalance = (int) currentBalance;
-		      int transferAmount = rand.nextInt(tmpBalance) + 1;
+		      int transferAmount = Math.abs(rand.nextInt(tmpBalance));
 	         
 	         if (transferAmount <= currentBalance)
 	         {
@@ -101,12 +101,15 @@ public class BankAccount implements Runnable, TransactionListener{
 	
 	public void addToCurrentBalance(double amount)
 	{
+		System.out.println(name + " has " + currentBalance);
 	   currentBalance += amount;
 	   System.out.println(name + " Balance added: " + amount + " // new Balance: " + currentBalance);
+	   System.out.println();
 	}
 	
 	public void removeFromCurrentBalance(double amount)
 	{
+		System.out.println(name + " has " + currentBalance);
 	   currentBalance -= amount;
 	   System.out.println(name + " Balance removed: " + amount + " // new Balance: " + currentBalance);
 	}
@@ -127,10 +130,10 @@ public class BankAccount implements Runnable, TransactionListener{
    }
 	
 	@Override
-	public void onTransaction(String from, String to, String amount) {
+	public void onTransaction(String from, String to, int amount) {
 	   if (to.equals(name))
 	   {
-	      addToCurrentBalance(Double.parseDouble(amount));
+	      addToCurrentBalance(amount);
 	   }
 	}
 

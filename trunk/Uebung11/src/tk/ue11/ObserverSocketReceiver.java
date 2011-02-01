@@ -47,11 +47,11 @@ public class ObserverSocketReceiver implements Runnable{
 				
 				String[] data = new String(packet.getData()).split(";");
 			
-				if(data[0].equalsIgnoreCase("transaction") && 4 == data.length)
+				if(data[0].equalsIgnoreCase("transaction"))
 				{
 				   listener.onTransaction(data[1], data[2], data[3]);
 				}
-				else if(data[0].equals("marker") && 3 == data.length)
+				else if(data[0].equals("marker"))
 				{
 				   listener.onMarker(data[1], data[2]);
 				}
