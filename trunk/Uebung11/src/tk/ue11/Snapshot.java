@@ -13,6 +13,8 @@ public class Snapshot {
 	List<Double> channel1Transactions;
 	List<Double> channel2Transactions;
 	
+	double currentSnapshot;
+	
 	public Snapshot(String accountName, String channel1Name, String channel2Name) {
 		this.accountName = accountName;
 		this.channel1Name = channel1Name;
@@ -20,10 +22,17 @@ public class Snapshot {
 		
 		channel1Transactions = new LinkedList<Double>();
 		channel2Transactions = new LinkedList<Double>();
+		
+		currentSnapshot = 0;
 	}
 	
 	public void setAccountBalance(double accountBalance) {
 		this.accountBalance = accountBalance;
+	}
+	
+	public double getAccountBalance()
+	{
+	   return accountBalance;
 	}
 	
 	public void addChannel1Transaction(double amount){
@@ -38,5 +47,29 @@ public class Snapshot {
 		accountBalance = 0;
 		channel1Transactions.clear();
 		channel2Transactions.clear();
+	}
+	
+	public double getChannel1Transactions()
+	{
+	   double ret = 0;
+	   
+	   for (double t : channel1Transactions)
+	   {
+	      ret += t;
+	   }
+	   
+	   return ret;
+	}
+	
+	public double getChannel2Transactions()
+	{
+	   double ret = 0;
+	   
+	   for (double t : channel2Transactions)
+	   {
+	      ret += t;
+	   }
+	   
+	   return ret;
 	}
 }

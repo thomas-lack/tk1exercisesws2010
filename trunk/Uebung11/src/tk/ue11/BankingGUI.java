@@ -220,7 +220,8 @@ public class BankingGUI extends JFrame implements ActionListener
 	
 	private void Account1SnapBtnActionPerformed(ActionEvent e) 
 	{
-		clController.startSnapshot(1);
+	   //disableSnapshotButtons();
+	   clController.startSnapshot(1);
 	}
 
 	/**
@@ -229,7 +230,8 @@ public class BankingGUI extends JFrame implements ActionListener
 	
 	private void Account2SnapBtnActionPerformed(ActionEvent e) 
 	{
-		clController.startSnapshot(2);
+	   //disableSnapshotButtons();
+	   clController.startSnapshot(2);
 	}
 
 	/**
@@ -238,9 +240,24 @@ public class BankingGUI extends JFrame implements ActionListener
 	
 	private void Account3SnapBtnActionPerformed(ActionEvent e) 
 	{
-		clController.startSnapshot(3);
+	   //disableSnapshotButtons();
+	   clController.startSnapshot(3);
 	}
-
+	
+	private void disableSnapshotButtons()
+	{
+	   Account1SnapBtn.setEnabled(false);
+      Account2SnapBtn.setEnabled(false);
+      Account3SnapBtn.setEnabled(false);
+	}
+	
+	public void enableSnapshotButtons()
+	{
+	   Account1SnapBtn.setEnabled(true);
+      Account2SnapBtn.setEnabled(true);
+      Account3SnapBtn.setEnabled(true);
+	}
+	
 	/**
 	 * 
 	 */
@@ -268,6 +285,7 @@ public class BankingGUI extends JFrame implements ActionListener
 			 */
 			clearLog();
 			StartSimBtn.setEnabled(false); // allowing to start over again, is not thread safe / sockets are still bound
+			printMsg("Simulation started (first output in approx. 5 sec)...");
 			clController.startBankAccounts(Share1, Share2, Share3);
 		}
 	}
@@ -340,8 +358,9 @@ public class BankingGUI extends JFrame implements ActionListener
 				System.out.println("SYSTEM : DEBUG : Invalid Account number. Must be 1,2 oder 3.");				
 		}
 	   
-	   setTitle("Chandy Lamport Snapshot (" + (Share1 + Share2 + Share3) +"\u20AC overall)"); 
+	   setTitle("Chandy Lamport Snapshot (" + getTotal() +"\u20AC overall)"); 
 	}
+	
 	/**
 	 * FUNCTION SPLITS THE TOTAL AMOUNT UP INTO "REASONABLE" SHARES
 	 * @param Total

@@ -83,12 +83,29 @@ public class AccountSocketSender implements Runnable {
 	public void sendMarker(String from){
 		synchronized (messageQueue) {
 			try {
-				messageQueue.put("marker;" + from + ";" + to);
+				messageQueue.put("marker;" + from + ";" + to + ";");
 				messageQueue.notify();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} 
 		}
+	}
+	
+	public void sendSnapshot(String from, String snapshotMsg)
+	{
+	   synchronized (messageQueue)
+	   {
+	      try
+         {
+            messageQueue.put("snapshot;" + from + ";" + snapshotMsg + ";");
+            messageQueue.notify();
+         } 
+	      catch (InterruptedException e)
+         {
+            e.printStackTrace();
+         }
+	      
+	   }
 	}
 	
 	@Override
@@ -118,6 +135,7 @@ public class AccountSocketSender implements Runnable {
 				
 				String message = messageQueue.poll();
 				
+				// send observer message
 				if(null != message)
 				{				   
 					try 
@@ -134,8 +152,8 @@ public class AccountSocketSender implements Runnable {
 						socket.send(packet);
 						
 						observer.sendStringMessage(message);
-												
-						randomDelay();
+						
+						//randomDelay();
 					} 
 					catch (IOException e) 
 					{
