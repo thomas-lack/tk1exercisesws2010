@@ -63,15 +63,15 @@ public class ChandyLamport implements MessageListener
       int fromAccBalance = gui.get_Share(fromAcc) - tmpAmount;
       int toAccBalance = gui.get_Share(toAcc) + tmpAmount;
       
-      String debugMsg1 = "New GUI Balance account" + fromAcc +": "+gui.get_Share(fromAcc)+" -> "+fromAccBalance;
-      String debugMsg2 = "New GUI Balance account" + toAcc +": "+gui.get_Share(toAcc)+" -> "+toAccBalance;
+//      String debugMsg1 = "New GUI Balance account" + fromAcc +": "+gui.get_Share(fromAcc)+" -> "+fromAccBalance;
+//      String debugMsg2 = "New GUI Balance account" + toAcc +": "+gui.get_Share(toAcc)+" -> "+toAccBalance;
             
       gui.set_Account(fromAcc, fromAccBalance);
       gui.set_Account(toAcc, toAccBalance);
       
       //send message notification to gui output textfield
       String msg = "Transfer: " + from + " -> " + to + " (" + tmpAmount + " \u20AC)";
-//      gui.printMsg(msg);
+      gui.printMsg(msg);
 //      System.out.println("\n/////gui <-> observer processing block/////\n" + msg);
 //      System.out.println(debugMsg1);
 //      System.out.println(debugMsg2 + "\n/////end of block /////\n");

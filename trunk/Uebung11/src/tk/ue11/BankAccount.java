@@ -2,8 +2,6 @@ package tk.ue11;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.Random;
 
 import tk.ue11.AccountSocketReceiver.TransactionListener;
@@ -101,27 +99,31 @@ public class BankAccount implements Runnable, TransactionListener{
 	
 	public void addToCurrentBalance(double amount)
 	{
-		System.out.println(name + " has " + currentBalance);
+//		System.out.println(name + " has " + currentBalance);
 	   currentBalance += amount;
-	   System.out.println(name + " Balance added: " + amount + " // new Balance: " + currentBalance);
-	   System.out.println();
+//	   System.out.println(name + " Balance added: " + amount + " // new Balance: " + currentBalance);
+//	   System.out.println();
 	}
 	
 	public void removeFromCurrentBalance(double amount)
 	{
-		System.out.println(name + " has " + currentBalance);
+//		System.out.println(name + " has " + currentBalance);
 	   currentBalance -= amount;
-	   System.out.println(name + " Balance removed: " + amount + " // new Balance: " + currentBalance);
+//	   System.out.println(name + " Balance removed: " + amount + " // new Balance: " + currentBalance);
 	}
 	
 	/**
-    * Produce a delay between 1s and 2s 
+    * Produce a delay between 1s and 2s
+    * 
+    * (slightly faster than the delay implemented in the AccountSocketSender 
+    * class, so that the MessageQueue is filled up by the time) 
     */
    public void randomDelay()
    {
       try 
       {
-         Thread.sleep(Math.abs((rand.nextInt() + 1000) % 2000));
+         int sleepTime = 3000 + Math.abs(rand.nextInt() % 3000);
+         Thread.sleep(sleepTime);
       } 
       catch (InterruptedException e) 
       {
