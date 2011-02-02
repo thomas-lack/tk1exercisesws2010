@@ -89,7 +89,7 @@ public class BankAccount implements Runnable, TransactionListener{
 	public void setCurrentBalance(double balance)
 	{
 	   currentBalance = balance;
-	   System.out.println(name + " Balance set to " + currentBalance);
+//	   System.out.println(name + " Balance set to " + currentBalance);
 	}
 	
 	public double getCurrentBalance()
@@ -112,8 +112,13 @@ public class BankAccount implements Runnable, TransactionListener{
 //	   System.out.println(name + " Balance removed: " + amount + " // new Balance: " + currentBalance);
 	}
 	
+	public AccountSocketReceiver getSocketReceiver()
+	{
+	   return receiver;
+	}
+	
 	/**
-    * Produce a delay between 1s and 2s
+    * Produce a delay between 3s and 6s
     * 
     * (slightly faster than the delay implemented in the AccountSocketSender 
     * class, so that the MessageQueue is filled up by the time) 
@@ -145,5 +150,6 @@ public class BankAccount implements Runnable, TransactionListener{
 
 	@Override
 	public void onStartSnapshot() {
+	   System.out.println(name + " received start snapshot message.");
 	}
 }
