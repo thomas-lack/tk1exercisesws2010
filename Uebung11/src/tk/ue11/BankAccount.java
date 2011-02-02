@@ -13,9 +13,9 @@ public class BankAccount implements Runnable, TransactionListener{
 	private String name, chan1, chan2;
 	private double currentBalance;
 	private Snapshot snapshot = null;
-	private boolean doSnapshot = false, haltMessageQueueing = false;
+	private boolean haltMessageQueueing = false;
 	private boolean recordChan1 = false, recordChan2 = false;
-	private int markerCount = 0;
+	private int chan1MsgReceived = 0, chan2MsgReceived = 0, msgSended = 0;
 	
 	private AccountSocketReceiver receiver;
 	private AccountSocketSender ichichan;
@@ -163,6 +163,85 @@ public class BankAccount implements Runnable, TransactionListener{
 	@Override
 	public void onMarker(String from, String to) 
 	{
+	   /*
+	    // 
+	    // Alternative (and correct) solution - not implemented till the end, because we were running out of time -.-
+	    //
+	   if (from.equals(chan1))
+	   {
+	      System.out.println("chan1++");
+	      chan1MsgReceived++;
+	   }
+	   else if (from.equals(chan2))
+	   {
+	      System.out.println("chan2++");
+	      chan2MsgReceived++;
+	   }
+	   // initialization case
+      if (from.equals("userInvokedSnapshot") || (chan1MsgReceived == 0 && chan2MsgReceived == 1) || (chan1MsgReceived == 1 && chan2MsgReceived == 0))
+      {
+         System.out.println("drin");
+         
+         haltMessageQueueing = true;
+         
+         snapshot.clear();
+         snapshot.setAccountBalance(currentBalance);
+         
+         recordChan1 = true;
+         recordChan2 = true;
+         
+         randomDelay();
+         
+         ichichan.sendMarker(name);
+         nichan.sendMarker(name);
+         
+         haltMessageQueueing = false;
+      }
+	   
+	   if (chan1MsgReceived == 2)
+	   {
+	      recordChan1 = false;
+	      
+	      System.out.println("1:" + recordChan1 + ";" + recordChan2);
+         
+         String out = "";
+         out += "state balance: " + ((int) snapshot.getAccountBalance()) + "\u20AC";
+         out += ", received from " + chan1 + ": " + ((int) snapshot.getChannel1Transactions()) + "\u20AC";
+         out += ", received from " + chan2 + ": " + ((int) snapshot.getChannel2Transactions()) + "\u20AC";
+         ichichan.sendSnapshot(name, out);
+         randomDelay();
+         nichan.sendMarker(name);
+         
+         msgSended++;
+	   }
+	   
+	   if (chan2MsgReceived == 2)
+	   {
+	      recordChan2 = false;
+	      
+	      System.out.println("2:" + recordChan1 + ";" + recordChan2);
+         
+         String out = "";
+         out += "state balance: " + ((int) snapshot.getAccountBalance()) + "\u20AC";
+         out += ", received from " + chan1 + ": " + ((int) snapshot.getChannel1Transactions()) + "\u20AC";
+         out += ", received from " + chan2 + ": " + ((int) snapshot.getChannel2Transactions()) + "\u20AC";
+         nichan.sendSnapshot(name,  out);
+         randomDelay();
+         ichichan.sendMarker(name);
+         
+         msgSended++;
+	   }
+	   
+	   // clear up, after all messages have been sended
+	   if (msgSended == 2)
+	   {
+	      msgSended = 0;
+	      chan1MsgReceived = 0;
+	      chan2MsgReceived = 0;
+	   }
+      */
+	   
+	   
 	   if (from.equals(chan1) && recordChan1 && recordChan2)
 	   {
 	      recordChan1 = false;
@@ -174,20 +253,26 @@ public class BankAccount implements Runnable, TransactionListener{
 	   else if (from.equals(chan1) && recordChan1 && !recordChan2)
 	   {
 	      recordChan1 = false;
+	      
 	      String out = "";
          out += "state balance: " + ((int) snapshot.getAccountBalance()) + "\u20AC";
          out += ", received from " + chan1 + ": " + ((int) snapshot.getChannel1Transactions()) + "\u20AC";
          out += ", received from " + chan2 + ": " + ((int) snapshot.getChannel2Transactions()) + "\u20AC";
          ichichan.sendSnapshot(name, out);
+         randomDelay();
+         nichan.sendMarker(name);
 	   }
 	   else if (from.equals(chan2) && !recordChan1 && recordChan2)
 	   {
 	      recordChan2 = false;
+	      
 	      String out = "";
 	      out += "state balance: " + ((int) snapshot.getAccountBalance()) + "\u20AC";
 	      out += ", received from " + chan1 + ": " + ((int) snapshot.getChannel1Transactions()) + "\u20AC";
 	      out += ", received from " + chan2 + ": " + ((int) snapshot.getChannel2Transactions()) + "\u20AC";
 	      nichan.sendSnapshot(name,  out);
+	      randomDelay();
+         ichichan.sendMarker(name);
 	   }
 	   else if (!recordChan1 && !recordChan2)
 	   {
@@ -206,6 +291,7 @@ public class BankAccount implements Runnable, TransactionListener{
 	      
 	      haltMessageQueueing = false;
 	   }
+	   
 	}
 
 	@Override
