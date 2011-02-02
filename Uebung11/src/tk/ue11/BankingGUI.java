@@ -3,6 +3,8 @@ package tk.ue11;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
@@ -35,9 +37,9 @@ public class BankingGUI extends JFrame implements ActionListener
 	
 	private JScrollPane LogTextScroll;
 	
-	private int acc1 = 0;
-	private int acc2 = 0;
-	private int acc3 = 0;
+//	private int acc1 = 0;
+//	private int acc2 = 0;
+//	private int acc3 = 0;
 	
 	public BankingGUI(ChandyLamport cl)
 	{
@@ -74,6 +76,14 @@ public class BankingGUI extends JFrame implements ActionListener
 	    LogTextField.setEditable(false);
 	    LogTextField.setBorder(BorderFactory.createMatteBorder(1,1,1,1,Color.black)); 
 	    LogTextScroll = new javax.swing.JScrollPane(LogTextField);
+	    LogTextScroll.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() 
+	    {  
+	      @Override
+         public void adjustmentValueChanged(AdjustmentEvent e)
+         {
+            e.getAdjustable().setValue(e.getAdjustable().getMaximum());
+         }
+	    });
 	    
 	    Account1NameLabel.setText("Account 1");
 	    Account1NameLabel.setHorizontalAlignment(javax.swing.JLabel.CENTER);
@@ -330,7 +340,7 @@ public class BankingGUI extends JFrame implements ActionListener
 				System.out.println("SYSTEM : DEBUG : Invalid Account number. Must be 1,2 oder 3.");				
 		}
 	   
-	   setTitle("Gessamt: " + (Share1 + Share2 + Share3)); 
+	   setTitle("Chandy Lamport Snapshot (" + (Share1 + Share2 + Share3) +"\u20AC overall)"); 
 	}
 	/**
 	 * FUNCTION SPLITS THE TOTAL AMOUNT UP INTO "REASONABLE" SHARES

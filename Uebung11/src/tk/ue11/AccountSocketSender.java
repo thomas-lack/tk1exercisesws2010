@@ -46,11 +46,13 @@ public class AccountSocketSender implements Runnable {
 	}
 	
 	/**
-	 * Produce a delay between 5s and 10s 
+	 * Produce a delay between 6s and 12s 
 	 */
 	public void randomDelay(){
 		try {
-			Thread.sleep(Math.abs(5000 + (rand.nextInt() % 5000)));
+			int sleepTime = 6000 + Math.abs(rand.nextInt() % 6000);
+			System.out.println(this.toString() + " sleeps " + sleepTime);
+		   Thread.sleep(sleepTime);
 		} catch (InterruptedException e) {
 			// ignore
 		}
@@ -133,7 +135,7 @@ public class AccountSocketSender implements Runnable {
 						
 						observer.sendStringMessage(message);
 												
-						//randomDelay();
+						randomDelay();
 					} 
 					catch (IOException e) 
 					{
