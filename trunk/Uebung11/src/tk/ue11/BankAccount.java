@@ -178,8 +178,7 @@ public class BankAccount implements Runnable, TransactionListener{
          out += "state balance: " + ((int) snapshot.getAccountBalance()) + "\u20AC";
          out += ", received from " + chan1 + ": " + ((int) snapshot.getChannel1Transactions()) + "\u20AC";
          out += ", received from " + chan2 + ": " + ((int) snapshot.getChannel2Transactions()) + "\u20AC";
-         nichan.sendSnapshot(name,  out);
-	      ichichan.sendSnapshot(name, out);
+         ichichan.sendSnapshot(name, out);
 	   }
 	   else if (from.equals(chan2) && !recordChan1 && recordChan2)
 	   {
