@@ -101,7 +101,7 @@ public class ChandyLamport implements MessageListener
    @Override
    public void onMarker(String from, String to)
    {
-      // TODO Auto-generated method stub
+      gui.printMsg("Mark: " + from + " -> " + to);
    }
 
    @Override
@@ -128,6 +128,13 @@ public class ChandyLamport implements MessageListener
 //      System.out.println("\n/////gui <-> observer processing block/////\n" + msg);
 //      System.out.println(debugMsg1);
 //      System.out.println(debugMsg2 + "\n/////end of block /////\n");
+   }
+   
+   @Override
+   public void onSnapshotInfo(String from, String snapshotMsg)
+   {
+      gui.printMsg(from + " <" + snapshotMsg + ">");
+      //gui.enableSnapshotButtons();
    }
    
    /**

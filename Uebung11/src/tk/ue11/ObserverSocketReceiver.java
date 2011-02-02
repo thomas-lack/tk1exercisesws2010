@@ -11,6 +11,7 @@ public class ObserverSocketReceiver implements Runnable{
 	{
 		public void onTransaction(String from, String to, String amount);
 		public void onMarker(String from, String to);
+		public void onSnapshotInfo(String from, String snapshotMsg);
 	}
 	
 	DatagramSocket socket;
@@ -55,7 +56,10 @@ public class ObserverSocketReceiver implements Runnable{
 				{
 				   listener.onMarker(data[1], data[2]);
 				}
-					
+				else if(data[0].equals("snapshot"))
+				{
+				   listener.onSnapshotInfo(data[1], data[2]);
+				}
 			}
 		}
 	}

@@ -56,7 +56,7 @@ public class AccountSocketReceiver implements Runnable {
 				   listener.onTransaction(data[1], data[2], (int)Double.parseDouble(data[3]));
 				}
 					
-				else if(data[0].equals("marker") && 3 == data.length)
+				else if(data[0].equalsIgnoreCase("marker"))
 				{
 				   listener.onMarker(data[1], data[2]);
 				}
