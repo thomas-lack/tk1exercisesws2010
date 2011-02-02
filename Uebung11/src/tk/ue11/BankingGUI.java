@@ -220,7 +220,7 @@ public class BankingGUI extends JFrame implements ActionListener
 	
 	private void Account1SnapBtnActionPerformed(ActionEvent e) 
 	{
-		
+		clController.startSnapshot(1);
 	}
 
 	/**
@@ -229,7 +229,7 @@ public class BankingGUI extends JFrame implements ActionListener
 	
 	private void Account2SnapBtnActionPerformed(ActionEvent e) 
 	{
-		
+		clController.startSnapshot(2);
 	}
 
 	/**
@@ -238,7 +238,7 @@ public class BankingGUI extends JFrame implements ActionListener
 	
 	private void Account3SnapBtnActionPerformed(ActionEvent e) 
 	{
-		
+		clController.startSnapshot(3);
 	}
 
 	/**

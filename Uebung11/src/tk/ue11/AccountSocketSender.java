@@ -51,7 +51,7 @@ public class AccountSocketSender implements Runnable {
 	public void randomDelay(){
 		try {
 			int sleepTime = 6000 + Math.abs(rand.nextInt() % 6000);
-			System.out.println(this.toString() + " sleeps " + sleepTime);
+//			System.out.println(this.toString() + " sleeps " + sleepTime);
 		   Thread.sleep(sleepTime);
 		} catch (InterruptedException e) {
 			// ignore
@@ -69,7 +69,7 @@ public class AccountSocketSender implements Runnable {
 						"transaction;" + from + ";" + to + ";" + amount + ";");
 				messageQueue.notify();
 				
-				System.out.println("Message posted: " + "transaction;" + from + ";" + to + ";" + amount);
+//				System.out.println("Message posted: " + "transaction;" + from + ";" + to + ";" + amount);
 				
 			} catch (InterruptedException e) {
 				e.printStackTrace();
