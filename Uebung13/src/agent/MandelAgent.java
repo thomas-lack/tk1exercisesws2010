@@ -20,7 +20,7 @@ public class MandelAgent extends Agent implements IMandelCalculator {
 	 * @param x
 	 * @param y
 	 */
-	public void calculate(double x, double y)
+	public void run(double x, double y)
 	{
 		this.x = x;
 		this.y = y;
@@ -38,12 +38,12 @@ public class MandelAgent extends Agent implements IMandelCalculator {
 		
 	}
 	
-	/**
-	 * Calculate the pixels for the Madelbrot picture
-	 * and store it in int[] data and move the Agent
-	 * back to the Master
-	 */
 	public void atServer(){
+
+	    IMyServer srv = (IMyServer)Mundo.getServiceByType(IMyServer.class);
+	    if (srv == null)
+	        throw new IllegalStateException("server service not found!");
+	      MandelData = srv.calculate(x,y);
 
 		moveTo("Master","atMaster");
 	}
