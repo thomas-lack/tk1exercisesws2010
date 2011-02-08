@@ -5,5 +5,5 @@ import org.mundo.annotation.mcRemote;
 @mcRemote
 public interface IMandelCalculator {
 
-	void calculate(double x, double y);
+	void run(double x, double y);
 }
