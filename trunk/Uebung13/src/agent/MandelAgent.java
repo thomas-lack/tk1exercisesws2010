@@ -2,8 +2,9 @@ package agent;
 
 import org.mundo.agent.Agent;
 import org.mundo.annotation.mcSerialize;
-import org.mundo.service.Node;
+import org.mundo.rt.Mundo;
 
+import api.ILoadBalancer;
 import api.IMandelCalculator;
 
 @mcSerialize
@@ -33,18 +34,14 @@ public class MandelAgent extends Agent implements IMandelCalculator {
 	 * And move the Agent to the server
 	 */
 	public void atLoadBalancer(){
-		for(int server = 0; server < serverNumber; server++)
-		int random = Math.random();
-		
+		ILoadBalancer loadBalancer = (ILoadBalancer)Mundo.getServiceByType(ILoadBalancer.class);
+		String server = loadBalancer.getBestServer();
+		moveTo(server, "atServer");
 	}
 	
 	public void atServer(){
-
-	    IMyServer srv = (IMyServer)Mundo.getServiceByType(IMyServer.class);
-	    if (srv == null)
-	        throw new IllegalStateException("server service not found!");
-	      MandelData = srv.calculate(x,y);
-
+		// der Agent soll alles berechnen, nicht der Server (so wie ich das verstanden habe)
+		doCalculation();
 		moveTo("Master","atMaster");
 	}
 	
@@ -58,5 +55,10 @@ public class MandelAgent extends Agent implements IMandelCalculator {
 		 * Add data to result array in and update GUI 
 		 */
 	}
-	
+
+	@Override
+	public void doCalculation() {
+		// TODO Mandelberechnung
+		
+	}
 }
