@@ -17,6 +17,6 @@ public class LoadBalancer extends DefaultApplication implements ILoadBalancer {
 	}
 	
 	public static void main(String[] args) {
-		start(new DefaultApplication());
+		start(new LoadBalancer());
 	}
 }
