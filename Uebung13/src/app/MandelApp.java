@@ -9,7 +9,18 @@ import org.mundo.agent.DoIMobility;;
 
 public class MandelApp {
 
-	public static void main(String[] args){
+	public static void main(String[] args)
+	{
+		// Start a Client
+		MandelApp Client = new MandelApp();
+		new MandelGUI(Client);
+	}
+	
+	/**
+	 * START CALCULATION PROCEDURE HERE
+	 */
+	public void start()
+	{
 		System.out.println("TODO");
 	}
 }
