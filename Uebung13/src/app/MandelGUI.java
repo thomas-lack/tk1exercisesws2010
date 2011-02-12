@@ -102,10 +102,10 @@ public class MandelGUI extends JFrame implements ActionListener
 		   /**
 		    * RESTART MANDEL CALCULATION
 		    * AND LINK THE AGENTS 
-		    *  
-		    * 	Client.start();
 		    */
 		   
+		   //Client.start();
+		   //showErrorDialog("System","trying to start");
 		   showErrorDialog("Error","Calculation not yet implemented!");
 	   }
 	   // Exit
