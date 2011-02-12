@@ -5,11 +5,11 @@ import org.mundo.annotation.mcSerialize;
 import org.mundo.rt.Mundo;
 
 import api.ILoadBalancer;
-import api.IMandelCalculator;
+import api.IMandelAgent;
 import app.MandelCanvas;
 
 @mcSerialize
-public class MandelAgent extends Agent implements IMandelCalculator {
+public class MandelAgent extends Agent implements IMandelAgent {
 
 	int[] MandelData;		// the result of the Mandelbrot calculation
 	double x_start;
