@@ -38,6 +38,12 @@ public class MandelApp {
 	public static void main(String[] args)
 	{
 		new MandelApp();
+		
+		/*
+		 * Still to do:
+		 * 	- Start Servers
+		 *	- Start Load Balancer
+		 */
 	}
 	
 	/**
