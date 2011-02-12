@@ -6,6 +6,7 @@ import org.mundo.rt.Mundo;
 
 import api.ILoadBalancer;
 import api.IMandelCalculator;
+import app.MandelCanvas;
 
 @mcSerialize
 public class MandelAgent extends Agent implements IMandelCalculator {
@@ -18,6 +19,8 @@ public class MandelAgent extends Agent implements IMandelCalculator {
 	int maxiter = 1000 ;	// maximum iterations = 1000 
 	int width  = 250;		// constant for image size 500x500 and divide factor 4 
 	int height = 250;		// constant for image size 500x500 and divide factor 4
+	
+	MandelCanvas canvas;
 
 	/**
 	 * Start a Mandelbrot calculation and move the
@@ -61,7 +64,9 @@ public class MandelAgent extends Agent implements IMandelCalculator {
 	 * the server into the gui / result array
 	 */
 	public void atMaster(){
-
+		int x = (int) x_start;
+		int y = (int) y_start;
+		canvas.addSubimage(MandelData, x, y, width, height);
 	}
 
 	/**
@@ -71,6 +76,24 @@ public class MandelAgent extends Agent implements IMandelCalculator {
 	public void doCalculation() 
 	{
 		MandelData = new Mandelbrot(width ,height, x_start, y_start, x_end, y_end, maxiter).calculate();		
+	}
+	
+	
+	/**
+	 * GET AND SET METHODS THAT LINK THE AGENT TO THE
+	 * MANDEL CANVAS OF THE GUI 
+	 * 		-> 	SINCE CONSTRUCTOR PARAMETERS AREN'T
+	 * 			ALLOWED IN MUNDOCORE
+	 */
+	
+	public void setCanvas(MandelCanvas canvas)
+	{
+		this.canvas = canvas;
+	}
+	
+	public MandelCanvas getCanvas()
+	{
+		return canvas;
 	}
 
 }
