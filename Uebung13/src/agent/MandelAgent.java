@@ -60,8 +60,8 @@ public class MandelAgent extends Agent implements IMandelCalculator {
 	}
 	
 	/**
-	 * Integrate the int[] MandelData the Agent brings back from
-	 * the server into the gui / result array
+	 * Integrate the MandelData the Agent brings back from
+	 * the server into the GUI
 	 */
 	public void atMaster(){
 		int x = (int) x_start;
@@ -70,7 +70,7 @@ public class MandelAgent extends Agent implements IMandelCalculator {
 	}
 
 	/**
-	 * calculate the Mandelbrot Data for the given subimage 
+	 * calculate the Mandelbrot Data for the given sub image 
 	 */
 	@Override
 	public void doCalculation() 

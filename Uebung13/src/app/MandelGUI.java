@@ -101,9 +101,9 @@ public class MandelGUI extends JFrame implements ActionListener
 	   {   
 		   /**
 		    * RESTART MANDEL CALCULATION
-		    * 
-		    *  -> 	WILL BE SOMETHING LIKE
-		    * 		Client.start();	
+		    * AND LINK THE AGENTS 
+		    *  
+		    * 	Client.start();
 		    */
 		   showErrorDialog("Error","Calculation not yet implemented!");
 	   }
@@ -112,6 +112,15 @@ public class MandelGUI extends JFrame implements ActionListener
 	   {
    			System.exit(0);
 	   }
+   }
+   
+   /**
+    * GET FUNCTION FOR THE CANVAS LINKED TO THE GUI
+    * @return
+    */
+   public MandelCanvas getCanvas()
+   {
+	   return canvas;
    }
    
    /**
