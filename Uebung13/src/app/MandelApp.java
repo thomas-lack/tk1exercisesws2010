@@ -62,10 +62,26 @@ public class MandelApp {
 		 *		*		  *         *
 		 *		*********************    
 		 */
-		
-		Agent001.run(0.0, 0.0, 250.0, 250.0);
-		Agent002.run(0.0, 250.0, 250.0, 500.0);
-		Agent003.run(250.0, 0.0, 500.0, 250.0);
-		Agent004.run(250.0, 250.0, 500.0, 500.0);
+		try
+		{
+			Agent001.run(0.0, 0.0, 250.0, 250.0);
+			Agent002.run(0.0, 250.0, 250.0, 500.0);
+			Agent003.run(250.0, 0.0, 500.0, 250.0);
+			Agent004.run(250.0, 250.0, 500.0, 500.0);
+		}
+		catch(Exception e)
+		{
+			
+		}
+	}
+	
+	/**
+	 * FUNCTION TO SHUT DOWN MUNDOCORE
+	 * BEFORE EXITING
+	 */
+	public void shutdown()
+	{
+		Mundo.shutdown();
+		System.exit(0);
 	}
 }
