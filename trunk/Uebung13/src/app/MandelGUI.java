@@ -105,6 +105,7 @@ public class MandelGUI extends JFrame implements ActionListener
 		    *  
 		    * 	Client.start();
 		    */
+		   
 		   showErrorDialog("Error","Calculation not yet implemented!");
 	   }
 	   // Exit
