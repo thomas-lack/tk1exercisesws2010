@@ -21,6 +21,18 @@ public class MandelApp {
 	
 	public MandelApp()
 	{
+		/*
+		try
+		{
+			Service client = new Service();
+			Mundo.registerService(client);
+			
+			DoIMobility mobility = Agent.newInstance(client.getSession(), "agent.MandelAgent");
+			
+		}
+		catch(Exception e){	}
+		*/
+		
 		Agent001 = new MandelAgent();
 		Agent002 = new MandelAgent();
 		Agent003 = new MandelAgent();
@@ -37,6 +49,7 @@ public class MandelApp {
 	
 	public static void main(String[] args)
 	{
+		Mundo.init();
 		new MandelApp();
 		
 		/*
