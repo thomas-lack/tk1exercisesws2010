@@ -10,21 +10,32 @@ import api.IMandelCalculator;
 @mcSerialize
 public class MandelAgent extends Agent implements IMandelCalculator {
 
-	int ServerNumber = 3;	// number of servers in the system
 	int[] MandelData;		// the result of the Mandelbrot calculation
-	double x;				
-	double y;
+	double x_start;
+	double x_end;
+	double y_start;
+	double y_end;
+	int maxiter = 1000 ;	// maximum iterations = 1000 
+	int width  = 250;		// constant for image size 500x500 and divide factor 4 
+	int height = 250;		// constant for image size 500x500 and divide factor 4
 
 	/**
 	 * Start a Mandelbrot calculation and move the
 	 * Agent to the Load Balancer
-	 * @param x
-	 * @param y
+	 * @param x_start
+	 * @param y_start
+	 * @param x_end
+	 * @param y_end
 	 */
-	public void run(double x, double y)
+	public void run(double x_start, double y_start, double x_end, double y_end)
 	{
-		this.x = x;
-		this.y = y;
+		this.x_start = x_start;
+		this.y_start = y_start;
+		this.x_end = x_end;
+		this.y_end = y_end;
+		
+		MandelData = new int[width*height];
+		
 		moveTo("LoadBalancer", "atLoadBalancer");
 	}
 	
@@ -46,19 +57,20 @@ public class MandelAgent extends Agent implements IMandelCalculator {
 	}
 	
 	/**
-	 * Integrate the int[] date the Agent brings back from
+	 * Integrate the int[] MandelData the Agent brings back from
 	 * the server into the gui / result array
 	 */
 	public void atMaster(){
-		
-		/**
-		 * Add data to result array in and update GUI 
-		 */
+
 	}
 
+	/**
+	 * calculate the Mandelbrot Data for the given subimage 
+	 */
 	@Override
-	public void doCalculation() {
-		// TODO Mandelberechnung
-		
+	public void doCalculation() 
+	{
+		MandelData = new Mandelbrot(width ,height, x_start, y_start, x_end, y_end, maxiter).calculate();		
 	}
+
 }
