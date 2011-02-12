@@ -58,7 +58,7 @@ public class MandelGUI extends JFrame implements ActionListener
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				System.exit(0);
+				Client.shutdown();
 			}
 		});
 		
@@ -111,7 +111,7 @@ public class MandelGUI extends JFrame implements ActionListener
 	   // Exit
 	   else if(menuItem.equals("Exit"))
 	   {
-   			System.exit(0);
+		   	Client.shutdown();
 	   }
    }
    
