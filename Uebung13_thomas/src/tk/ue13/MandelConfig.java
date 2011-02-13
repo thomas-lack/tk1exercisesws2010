@@ -1,13 +1,17 @@
 package tk.ue13;
 
-import java.awt.image.MemoryImageSource;
+import org.mundo.annotation.mcSerialize;
 
+@mcSerialize
 public class MandelConfig
 {
-   private int startX, startY; // starting pixels
-   private int height, width, mi;
-   private double x1, y1, x2, y2;
-   MemoryImageSource mis;
+   public int startX, startY; // starting pixels
+   public int height, width, mi;
+   public double x1, y1, x2, y2;
+   
+   public MandelConfig()
+   {
+   }
    
    public MandelConfig(int startX, int startY, int height, int width, double x1, double y1, double x2, double y2, int mi)
    {
@@ -20,16 +24,6 @@ public class MandelConfig
       this.x2 = x2;
       this.y2 = y2;
       this.mi = mi;
-   }
-   
-   public MemoryImageSource getImage()
-   {
-      return mis;
-   }
-   
-   public void setImage(MemoryImageSource mis)
-   {
-      this.mis = mis;
    }
    
    public int getStartX()

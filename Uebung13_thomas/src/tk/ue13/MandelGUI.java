@@ -84,7 +84,7 @@ public class MandelGUI extends javax.swing.JFrame
    
    public void updateImage(MandelConfig cfg)
    {
-      canvas.setImage(canvas.getToolkit().createImage(cfg.getImage()));
+      //canvas.setImage(canvas.getToolkit().createImage(cfg.getImage()));
    }
    
    private void exit()

@@ -55,28 +55,34 @@
         <include name="META-INF/*"/>
       </fileset>
       <fileset dir="${build}">
-        <!-- <include name="tk/ue13/**"/> -->
+        <include name="tk/ue13/**"/>
         <include name="tk/ue13/agent/**"/>
-      	<!-- <include name="tk/ue13/server/**"/> -->
+      	<include name="tk/ue13/server/**"/>
         <include name="metaclasses.xml"/>
       </fileset>
     </jar>
     <jar jarfile="var/loadbalancer/loadbalancer.jar">
       <fileset dir="${build}">
-        <include name="tk/ue13/server/**"/>
+      	<include name="tk/ue13/**"/>
+      	<include name="tk/ue13/agent/**"/>
+      	<include name="tk/ue13/server/**"/>
+      	<include name="metaclasses.xml"/>
       </fileset>
     </jar>
   	<jar jarfile="var/server/server.jar">
   		<fileset dir="${build}">
+  			<include name="tk/ue13/**"/>
+  			<include name="tk/ue13/agent/**"/>
   			<include name="tk/ue13/server/**"/>
+  			<include name="metaclasses.xml"/>
   		</fileset>
   	</jar>
   	<jar jarfile="var/client/client.jar">
   		<fileset dir="${build}">
   			<include name="tk/ue13/**"/>
   			<include name="tk/ue13/agent/**"/>
-  			<!--<include name="tk/ue13/server/**"/>-->
-  			<!--<include name="metaclasses.xml"/>-->
+  			<include name="tk/ue13/server/**"/>
+  			<include name="metaclasses.xml"/>
   		</fileset>
   	</jar>
   </target>
@@ -98,7 +104,8 @@ cd ../..</echo>
   </target>
 
   <target name="deploy" depends="jar,deploy-windows,deploy-unix">
-    <mkdir dir="var/server/com" />
+    <mkdir dir="var/loadbalancer/com" />
+  	<mkdir dir="var/server/com" />
     <!--<mkdir dir="var/server2/com" />-->
   </target>
 </project>
