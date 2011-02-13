@@ -106,6 +106,5 @@ cd ../..</echo>
   <target name="deploy" depends="jar,deploy-windows,deploy-unix">
     <mkdir dir="var/loadbalancer/com" />
   	<mkdir dir="var/server/com" />
-    <!--<mkdir dir="var/server2/com" />-->
   </target>
 </project>

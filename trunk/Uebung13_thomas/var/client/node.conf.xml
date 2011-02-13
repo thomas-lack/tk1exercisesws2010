@@ -1,6 +1,6 @@
 <NodeConfig xsi:type="map" xmlns:xsi="http://www.w3.org/1999/XMLSchema-instance">
   <config-type>overlay</config-type>
-  <name>client</name>
+  <name>clienthorst</name>
 
   <ServiceManager xsi:type="map" activeClass="ServiceManager$Options">
     <plugin-directory>com</plugin-directory>
