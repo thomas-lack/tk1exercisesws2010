@@ -13,16 +13,22 @@ import tk.ue13.server.IMandelCalcServer;
 @mcSerialize
 public class MandelAgent extends Agent implements IMandelAgent
 {
-   public String id, client;
+   public String id, clientId;
    public MandelConfig config;
    
    @Override
    public void run(String id, String client, MandelConfig cfg)
    {
       this.id = id;
-      this.client = client;
+      clientId = client;
       
       System.out.println("*** "+id+" starting at "+Node.thisNode().getName());
+      System.out.println("*** "+config+" config at "+Node.thisNode().getName());
+      Node[] nodes = Node.getNeighbors();
+      for (Node n : nodes)
+      {
+         System.out.println(n.getName());
+      }
       
       // at first, move to the load balancer
       moveTo("LoadBalancer", "atLoadBalancer");     
@@ -33,6 +39,11 @@ public class MandelAgent extends Agent implements IMandelAgent
    {
       System.out.println("*** "+id+" now at "+Node.thisNode().getName());
       System.out.println("*** "+config+" config at "+Node.thisNode().getName());
+      Node[] nodes = Node.getNeighbors();
+      for (Node n : nodes)
+      {
+         System.out.println(n.getName());
+      }
       
       //calculate Mandelbrot picture with given parameters
       IMandelCalcServer srv = (IMandelCalcServer) Mundo.getServiceByType(IMandelCalcServer.class);
@@ -44,7 +55,7 @@ public class MandelAgent extends Agent implements IMandelAgent
       
       config = srv.calculateMandelImage(config);
       System.out.println("*** leaving "+Node.thisNode().getName());
-      moveTo(client, "atClient");
+      moveTo(clientId, "atClient");
    }
 
    @Override
@@ -52,6 +63,11 @@ public class MandelAgent extends Agent implements IMandelAgent
    {
       System.out.println("*** "+id+" now at "+Node.thisNode().getName());
       System.out.println("*** "+config+" config at "+Node.thisNode().getName());
+      Node[] nodes = Node.getNeighbors();
+      for (Node n : nodes)
+      {
+         System.out.println(n.getName());
+      }
       
       ILoadBalancer loadBalancer = (ILoadBalancer) Mundo.getServiceByType(ILoadBalancer.class);
       
@@ -70,13 +86,19 @@ public class MandelAgent extends Agent implements IMandelAgent
    public void atClient()
    {
       System.out.println("*** "+id+" now at "+Node.thisNode().getName());
+      System.out.println("*** "+config+" config at "+Node.thisNode().getName());
+      Node[] nodes = Node.getNeighbors();
+      for (Node n : nodes)
+      {
+         System.out.println(n.getName());
+      }
       
       // post calculated mandelbrot image to the client
       IMandelClient client = (IMandelClient) Mundo.getServiceByType(IMandelClient.class);
       
       if (client == null)
       {
-         throw new IllegalStateException("Client not found!");
+         throw new IllegalStateException("Client service not found!");
       }
       
       client.calculationFinished(config);

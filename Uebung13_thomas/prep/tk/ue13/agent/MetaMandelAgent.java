@@ -13,7 +13,7 @@ public class MetaMandelAgent extends org.mundo.rt.Metaclass
   }
   public String getFields()
   {
-    return super.getFields()+"s id;s client;tk.ue13.MandelConfig config;";
+    return super.getFields()+"s id;s clientId;tk.ue13.MandelConfig config;";
   }
   public tk.ue13.agent.MandelAgent newInstance() throws InstantiationException 
   {
@@ -24,7 +24,7 @@ public class MetaMandelAgent extends org.mundo.rt.Metaclass
     super.passivate(o, m);
     tk.ue13.agent.MandelAgent t=(tk.ue13.agent.MandelAgent)o;
     m.putString("id", t.id);
-    m.putString("client", t.client);
+    m.putString("clientId", t.clientId);
     m.putPassivated("config", t.config);
   }
   public void activate(Object o, org.mundo.rt.TypedMap m, org.mundo.rt.TypedMap ctx) throws Exception
@@ -41,7 +41,7 @@ public class MetaMandelAgent extends org.mundo.rt.Metaclass
     }
     try
     {
-      t.client=m.getString("client");
+      t.clientId=m.getString("clientId");
     }
     catch(Exception x)
     {
