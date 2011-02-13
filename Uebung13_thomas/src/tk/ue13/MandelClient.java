@@ -45,6 +45,7 @@ public class MandelClient extends Service implements IMandelClient
    @Override
    public void calculationFinished(MandelConfig cfg)
    {
+      System.out.println(cfg.getHeight());
       gui.updateImage(cfg);
    }
    

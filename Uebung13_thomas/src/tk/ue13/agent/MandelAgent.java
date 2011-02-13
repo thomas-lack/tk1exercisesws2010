@@ -21,6 +21,7 @@ public class MandelAgent extends Agent implements IMandelAgent
    {
       this.id = id;
       clientId = client;
+      config = cfg;
       
       System.out.println("*** "+id+" starting at "+Node.thisNode().getName());
       System.out.println("*** "+config+" config at "+Node.thisNode().getName());
@@ -77,7 +78,6 @@ public class MandelAgent extends Agent implements IMandelAgent
       }
       
       String calculatingServer = loadBalancer.getServer();
-      
       System.out.println("*** leaving "+Node.thisNode().getName());
       moveTo(calculatingServer, "atCalcServer");
    }
