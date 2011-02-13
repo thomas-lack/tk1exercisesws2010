@@ -18,17 +18,21 @@ public class MandelCalcServer extends DefaultApplication implements IMandelCalcS
    @Override
    public MandelConfig calculateMandelImage(MandelConfig config)
    {
-      xstart=config.getX1(); ystart=config.getY1(); 
-      xend=config.getX2(); yend=config.getY2(); 
-      maxiter=config.getMi();
-      //canvas=c;
-      width=config.getWidth(); //canvas.getWidth();
-      height=config.getHeight(); //canvas.getHeight();
-      data=new int[width*height];
-      mis=new MemoryImageSource(width, height, generateColorModel(),
-          data, 0, width);
+      if (config != null)
+      {
+         xstart=config.getX1(); ystart=config.getY1(); 
+         xend=config.getX2(); yend=config.getY2(); 
+         maxiter=config.getMi();
+         //canvas=c;
+         width=config.getWidth(); //canvas.getWidth();
+         height=config.getHeight(); //canvas.getHeight();
+         data=new int[width*height];
+         mis=new MemoryImageSource(width, height, generateColorModel(),
+             data, 0, width);
+         
+         //config.setImage(getImage());
+      }
       
-      config.setImage(getImage());
       return config;
    }
    

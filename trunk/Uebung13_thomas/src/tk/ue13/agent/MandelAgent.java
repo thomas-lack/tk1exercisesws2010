@@ -13,8 +13,8 @@ import tk.ue13.server.IMandelCalcServer;
 @mcSerialize
 public class MandelAgent extends Agent implements IMandelAgent
 {
-   private String id, client;
-   private MandelConfig config;
+   public String id, client;
+   public MandelConfig config;
    
    @Override
    public void run(String id, String client, MandelConfig cfg)
@@ -32,6 +32,7 @@ public class MandelAgent extends Agent implements IMandelAgent
    public void atCalcServer()
    {
       System.out.println("*** "+id+" now at "+Node.thisNode().getName());
+      System.out.println("*** "+config+" config at "+Node.thisNode().getName());
       
       //calculate Mandelbrot picture with given parameters
       IMandelCalcServer srv = (IMandelCalcServer) Mundo.getServiceByType(IMandelCalcServer.class);
@@ -50,6 +51,7 @@ public class MandelAgent extends Agent implements IMandelAgent
    public void atLoadBalancer()
    {
       System.out.println("*** "+id+" now at "+Node.thisNode().getName());
+      System.out.println("*** "+config+" config at "+Node.thisNode().getName());
       
       ILoadBalancer loadBalancer = (ILoadBalancer) Mundo.getServiceByType(ILoadBalancer.class);
       
