@@ -13,7 +13,7 @@ public class MetaMandelConfig extends org.mundo.rt.Metaclass
   }
   public String getFields()
   {
-    return super.getFields()+"i startX;i startY;i height;i width;i mi;d x1;d y1;d x2;d y2;";
+    return super.getFields()+"i startX;i startY;i height;i width;i mi;d x1;d y1;d x2;d y2;i[ imageData;";
   }
   public tk.ue13.MandelConfig newInstance() throws InstantiationException 
   {
@@ -32,6 +32,7 @@ public class MetaMandelConfig extends org.mundo.rt.Metaclass
     m.putDouble("y1", t.y1);
     m.putDouble("x2", t.x2);
     m.putDouble("y2", t.y2);
+    m.putPassivated("imageData", t.imageData);
   }
   public void activate(Object o, org.mundo.rt.TypedMap m, org.mundo.rt.TypedMap ctx) throws Exception
   {
@@ -104,6 +105,14 @@ public class MetaMandelConfig extends org.mundo.rt.Metaclass
     try
     {
       t.y2=m.getDouble("y2");
+    }
+    catch(Exception x)
+    {
+      x.printStackTrace();
+    }
+    try
+    {
+      t.imageData=(int[])m.getActivated("imageData", ctx);
     }
     catch(Exception x)
     {
