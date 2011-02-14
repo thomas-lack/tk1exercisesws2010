@@ -69,7 +69,23 @@
       	<include name="metaclasses.xml"/>
       </fileset>
     </jar>
-  	<jar jarfile="var/server/server.jar">
+  	<jar jarfile="var/server1/server.jar">
+  		<fileset dir="${build}">
+  			<include name="tk/ue13/**"/>
+  			<include name="tk/ue13/agent/**"/>
+  			<include name="tk/ue13/server/**"/>
+  			<include name="metaclasses.xml"/>
+  		</fileset>
+  	</jar>
+  	<jar jarfile="var/server2/server.jar">
+  		<fileset dir="${build}">
+  			<include name="tk/ue13/**"/>
+  			<include name="tk/ue13/agent/**"/>
+  			<include name="tk/ue13/server/**"/>
+  			<include name="metaclasses.xml"/>
+  		</fileset>
+  	</jar>
+  	<jar jarfile="var/server3/server.jar">
   		<fileset dir="${build}">
   			<include name="tk/ue13/**"/>
   			<include name="tk/ue13/agent/**"/>
@@ -91,9 +107,15 @@
     <echo file="run-loadbalancer.bat" append="false">cd var/loadbalancer
 java -cp ${mclib}/mundocore.jar;loadbalancer.jar; tk.ue13.server.LoadBalancer
 cd ../..</echo>
-    <echo file="run-server.bat" append="false">cd var/server
+    <echo file="run-server1.bat" append="false">cd var/server1
 java -cp ${mclib}/mundocore.jar;server.jar; tk.ue13.server.MandelCalcServer
 cd ../..</echo>
+  	<echo file="run-server2.bat" append="false">cd var/server2
+  	java -cp ${mclib}/mundocore.jar;server.jar; tk.ue13.server.MandelCalcServer
+  	cd ../..</echo>
+  	<echo file="run-server3.bat" append="false">cd var/server3
+  	java -cp ${mclib}/mundocore.jar;server.jar; tk.ue13.server.MandelCalcServer
+  	cd ../..</echo>
     <echo file="run-client.bat" append="false">cd var/client
 java -cp ${mclib}/mundocore.jar;client.jar; tk.ue13.MandelClient
 cd ../..</echo>
@@ -105,6 +127,8 @@ cd ../..</echo>
 
   <target name="deploy" depends="jar,deploy-windows,deploy-unix">
     <mkdir dir="var/loadbalancer/com" />
-  	<mkdir dir="var/server/com" />
+  	<mkdir dir="var/server1/com" />
+  	<mkdir dir="var/server2/com" />
+  	<mkdir dir="var/server3/com" />
   </target>
 </project>
