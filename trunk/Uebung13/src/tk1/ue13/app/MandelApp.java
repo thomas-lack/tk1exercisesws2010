@@ -49,18 +49,11 @@ public class MandelApp extends DefaultApplication implements IMandelApp {
 		
 		double x_step = 3.0 / x_num;
 		double y_step = 2.5 / y_num;
-		System.out.println("x_step: " + x_step + " y_step: " + y_step);
 		
 		for(int x = 0; x < x_num; ++x){
 			for(int y = 0; y < y_num; ++y){
 				double _x = x0 + (x * x_step);
 				double _y = y0 + (y * y_step);
-				
-				System.out.println();
-				System.out.println(" x: " + (x * w) + " y: " +(y * h));
-				System.out.println(" w: " + w + " h: " + h);
-				System.out.println(" x0: " + _x + " y0: " + _y);
-				System.out.println(" x1: " + (_x + x_step) + " y1: " + (_y + y_step));
 				
 				startAgent(new MandelConfig(
 						x * w, y * h, 
