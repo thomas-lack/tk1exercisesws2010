@@ -27,9 +27,6 @@ public class MandelClient extends Service implements IMandelClient
    
    public void calculateMandelImage(MandelConfig cfg)
    {
-      //MemoryImageSource mis = new MandelbrotCalc(height, width, x1, y1, x2, y2, mi).getImage();
-      //gui.updateImage(mis);
-      
       try
       {
          DoIMobility mobility = Agent.newInstance(this.getSession(), "tk.ue13.agent.MandelAgent");
@@ -45,7 +42,6 @@ public class MandelClient extends Service implements IMandelClient
    @Override
    public void calculationFinished(MandelConfig cfg)
    {
-      System.out.println(cfg.getHeight());
       gui.updateImage(cfg);
    }
    

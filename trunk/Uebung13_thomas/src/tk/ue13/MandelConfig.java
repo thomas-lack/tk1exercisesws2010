@@ -8,6 +8,7 @@ public class MandelConfig
    public int startX, startY; // starting pixels
    public int height, width, mi;
    public double x1, y1, x2, y2;
+   public int[] imageData;
    
    public MandelConfig()
    {
@@ -24,6 +25,16 @@ public class MandelConfig
       this.x2 = x2;
       this.y2 = y2;
       this.mi = mi;
+   }
+   
+   public int[] getImageData()
+   {
+      return imageData;
+   }
+   
+   public void setImageData(int[] data)
+   {
+      imageData = data;
    }
    
    public int getStartX()
