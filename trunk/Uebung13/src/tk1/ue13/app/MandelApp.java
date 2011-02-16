@@ -6,6 +6,7 @@ import java.awt.image.IndexColorModel;
 import org.mundo.agent.Agent;
 import org.mundo.agent.DoIMobility;
 import org.mundo.rt.Mundo;
+import org.mundo.rt.RMCException;
 import org.mundo.util.DefaultApplication;
 
 import tk1.ue13.agent.MandelAgent;
@@ -38,8 +39,8 @@ public class MandelApp extends DefaultApplication implements IMandelApp {
 	 */
 	public void refresh(){
 		MandelCanvas canvas = gui.getCanvas();
-		int x_num = 3; // vielleicht über die GUI ändern
-		int y_num = 2; // vielleicht über die GUI ändern
+		int x_num = 2; // number of agents in a row
+		int y_num = 2; // number of agents in a column
 		
 		int w = canvas.getWidth() / x_num;
 		int h = canvas.getHeight() / y_num;
@@ -61,6 +62,12 @@ public class MandelApp extends DefaultApplication implements IMandelApp {
 						_x, _y, 
 						_x + x_step, _y + y_step, 
 						1000));
+				
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					// ignore
+				}
 			}
 		}
 	}
@@ -73,7 +80,7 @@ public class MandelApp extends DefaultApplication implements IMandelApp {
 			DoIMandelAgent agent = new DoIMandelAgent(mobility);
 			agent.run(config);
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println("failed to send agent");
 		}
 	}
 

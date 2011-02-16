@@ -3,6 +3,7 @@ package tk1.ue13.agent;
 import org.mundo.agent.Agent;
 import org.mundo.annotation.mcSerialize;
 import org.mundo.rt.Mundo;
+import org.mundo.rt.RMCException;
 import org.mundo.service.Node;
 
 import tk1.ue13.api.ILoadBalancer;
@@ -24,9 +25,13 @@ public class MandelAgent extends Agent implements IMandelAgent {
 	 * @param y_end
 	 */
 	public void run(MandelConfig config){
-		System.out.println("*** starting at "+Node.thisNode().getName());
-		this.config = config;
-		moveTo("LoadBalancer", "atLoadBalancer");
+		try {			
+			System.out.println("*** " + getServiceId() + " starting at "+Node.thisNode().getName());
+			this.config = config;
+			moveTo("LoadBalancer", "atLoadBalancer");
+		} catch (Exception e) {
+			System.out.println(getServiceId() + " failed to move");
+		}
 	}
 	
 	/**
@@ -35,16 +40,24 @@ public class MandelAgent extends Agent implements IMandelAgent {
 	 * And move the Agent to the server
 	 */
 	public void atLoadBalancer(){
-		System.out.println("*** now at "+Node.thisNode().getName());
-		ILoadBalancer loadBalancer = (ILoadBalancer)Mundo.getServiceByType(ILoadBalancer.class);
-		String server = loadBalancer.getBestServer();
-		moveTo(server, "atServer");
+		try {
+			System.out.println("*** " + getServiceId() + " now at "+Node.thisNode().getName());
+			ILoadBalancer loadBalancer = (ILoadBalancer)Mundo.getServiceByType(ILoadBalancer.class);
+			String server = loadBalancer.getBestServer();		
+			moveTo(server, "atServer");			
+		} catch (Exception e) {
+			System.out.println(getServiceId() + " failed to move");
+		}
 	}
 	
 	public void atServer(){
-		System.out.println("*** now at "+Node.thisNode().getName());
-		doCalculation();
-		moveTo("master","atMaster");
+		try {
+			System.out.println("*** " + getServiceId() + " now at "+Node.thisNode().getName());
+			doCalculation();
+			moveTo("master","atMaster");		
+		} catch (Exception e) {
+			System.out.println(getServiceId() + " failed to move");
+		}
 	}
 	
 	/**
@@ -52,7 +65,7 @@ public class MandelAgent extends Agent implements IMandelAgent {
 	 * the server into the GUI
 	 */
 	public void atMaster(){
-		System.out.println("*** back at "+Node.thisNode().getName());
+		System.out.println("*** " + getServiceId() + " back at "+Node.thisNode().getName());
 		IMandelApp app = (IMandelApp)Mundo.getServiceByType(IMandelApp.class);
 		app.setMandelImage(config, mandelData);
 	}
